@@ -2257,13 +2257,13 @@ reference = "mirror"
 
 [[package]]
 name = "python-dotenv"
-version = "1.0.1"
+version = "1.0.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
-    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
+    {file = "python-dotenv-1.0.0.tar.gz", hash = "sha256:a8df96034aae6d2d50a4ebe8216326c61c3eb64836776504fcca410e5937a3ba"},
+    {file = "python_dotenv-1.0.0-py3-none-any.whl", hash = "sha256:f5971a9226b701070a4bf2c38c89e5a3f0d64de8debda981d1db98583009122a"},
 ]
 
 [package.extras]
@@ -3239,4 +3239,4 @@ reference = "mirror"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "a7ec40f9b5ae0bf0e945ac0f39cc29df04659076215a47c09b905272289076f2"
+content-hash = "cf53319f2b2e87babd9e7d0409ad4b343cb0f1ec8294002f62fed4f60b218ba3"
