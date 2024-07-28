@@ -27,15 +27,15 @@ class HttpStatusError(LarkException):
 
 
 class BadResponseError(LarkException):
-    def __init__(self, msg: str, context: dict | None = None):
+    def __init__(self, msg: str = "Bad Response", context: dict | None = None):
         super().__init__(LarkStatusCode.BAD_RESPONSE, msg, context)
 
 
 class APITimeoutError(LarkException):
-    def __init__(self, msg: str, context: dict | None = None):
+    def __init__(self, msg: str = "Timeout", context: dict | None = None):
         super().__init__(LarkStatusCode.APITimeout, msg, context)
 
 
 class APIConnectionError(LarkException):
-    def __init__(self, msg: str, context: dict | None = None):
+    def __init__(self, msg: str = "API Connection Error", context: dict | None = None):
         super().__init__(LarkStatusCode.APIConnectionError, msg, context)
