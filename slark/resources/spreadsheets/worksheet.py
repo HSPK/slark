@@ -2,7 +2,10 @@ import httpx
 
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH
-from slark.types.spreadsheets import GetAllWorksheetsInfoResponse
+from slark.types.spreadsheets import (
+    GetAllWorksheetsInfoResponse,
+    GetWorksheetInfoResponse,
+)
 
 
 class AsyncWorksheet(AsyncAPIResource):
@@ -27,4 +30,19 @@ class AsyncWorksheet(AsyncAPIResource):
             ),
             cast_to=GetAllWorksheetsInfoResponse,
             options={"timeout": timeout},
+        )
+
+    async def get_worksheet_info(
+        self,
+        sheet_token: str,
+        *,
+        sheet_id: str,
+        timeout: httpx.Timeout | None = None,
+    ):
+        return await self._get(
+            API_PATH.spreadsheets.get_worksheet_info.format(
+                spreadsheet_token=sheet_token, sheet_id=sheet_id
+            ),
+            options={"timeout": timeout},
+            cast_to=GetWorksheetInfoResponse,
         )

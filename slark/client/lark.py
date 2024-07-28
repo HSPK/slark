@@ -1,22 +1,18 @@
-from typing import Literal
-
 import httpx
 from loguru import logger
 
 from slark import resources
 from slark._constants import DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT
 from slark.client._client import AsyncAPIClient
+from slark.types import CredentailTypes
 from slark.types.auth import TokenBase
-import re
-
-CredentailTypes = Literal["tenant", "user"]
 
 
 class AsyncLark(AsyncAPIClient):
     auth: resources.AsyncAuth
     webhook: resources.AsyncWebhook
     knowledge_space: resources.KnowledgeSpace
-    spreadsheets: resources.AsyncSpreadsheets
+    sheets: resources.AsyncSpreadsheets
 
     _app_id: str | None
     _app_secret: str | None
@@ -52,7 +48,7 @@ class AsyncLark(AsyncAPIClient):
         self.auth = resources.AsyncAuth(self)
         self.webhook = resources.AsyncWebhook(self)
         self.knowledge_space = resources.KnowledgeSpace(self)
-        self.spreadsheets = resources.AsyncSpreadsheets(self)
+        self.sheets = resources.AsyncSpreadsheets(self)
 
     @property
     def app_credentials(self) -> dict:
@@ -72,30 +68,4 @@ class AsyncLark(AsyncAPIClient):
                 raise NotImplementedError(f"{self._token_type} token is not supported")
         return {
             "Authorization": f"Bearer {self._token.access_token}",
-        }
-
-    async def get_spreadsheet_token_and_sheet_id(self, url: str):
-        if "/sheets/" in url:
-            spreadsheet_token, sheet_id = re.findall(
-                r"\/sheets\/([^\/\?]+)(?:\?sheet=([^\/]+))?", url
-            )[0]
-        elif "/wiki/" in url:
-            wiki_token, sheet_id = re.findall(
-                r"\/wiki\/([^\/\?]+)(?:\?sheet=([^\/]+))?", url
-            )[0]
-            node_info = (
-                await self.knowledge_space.nodes.get_node_info(wiki_token)
-            ).data.node
-            if node_info.obj_type != "sheet":
-                raise ValueError("The node is not a sheet")
-            spreadsheet_token = node_info.obj_token
-        assert spreadsheet_token, "Sheet token is not found"
-        if not sheet_id:
-            sheets_info = await self.spreadsheets.worksheet.get_all_worksheets_info(
-                spreadsheet_token
-            )
-            sheet_id = sheets_info.data.sheets[0].sheet_id
-        return {
-            "spreadsheet_token": spreadsheet_token,
-            "sheet_id": sheet_id,
         }

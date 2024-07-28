@@ -36,6 +36,7 @@ class WORKSHEET_DATA:
 class SPREADSHEETS:
     get_spreadsheet_info = "/sheets/v3/spreadsheets/{spreadsheet_token}"
     get_all_worksheets = "/sheets/v3/spreadsheets/{spreadsheet_token}/sheets/query"
+    get_worksheet_info = "/sheets/v3/spreadsheets/{spreadsheet_token}/sheets/{sheet_id}"
     data = WORKSHEET_DATA
 
 

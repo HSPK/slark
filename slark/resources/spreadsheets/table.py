@@ -11,6 +11,7 @@ class AsyncTable(AsyncAPIResource):
     async def get_spreadsheet_info(
         self,
         sheet_token: str,
+        *,
         user_id_type: Literal["open_id", "union_id", "user_id"] = "open_id",
         timeout: httpx.Timeout | None = None,
     ) -> dict:

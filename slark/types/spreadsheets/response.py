@@ -36,7 +36,7 @@ class WorksheetMerge(BaseModel):
     end_column_index: int
 
 
-class GetAllWorksheetsInfoResponseDataWorksheet(BaseModel):
+class WorksheetInfo(BaseModel):
     sheet_id: str
     """工作表 ID"""
     title: str
@@ -53,8 +53,16 @@ class GetAllWorksheetsInfoResponseDataWorksheet(BaseModel):
     """合并单元格的相关信息。没有合并单元格则不返回。"""
 
 
+class GetWorksheetInfoResponseData(BaseModel):
+    sheet: WorksheetInfo
+
+
+class GetWorksheetInfoResponse(BaseResponse):
+    data: GetWorksheetInfoResponseData
+
+
 class GetAllWorksheetsInfoResponseData(BaseModel):
-    sheets: list[GetAllWorksheetsInfoResponseDataWorksheet]
+    sheets: list[WorksheetInfo]
 
 
 class GetAllWorksheetsInfoResponse(BaseResponse):
