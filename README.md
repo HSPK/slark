@@ -1,5 +1,7 @@
 # Slark
 
+[![PyPI version](https://badge.fury.io/py/slark.svg)](https://badge.fury.io/py/slark)
+
 Simple LARK(Feishu) SDK
 
 # Usage
