@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "slark"
+version = "0.0.0"
+description = "# SLARK Simple LARK(Feishu) SDK"
+authors = ["HSPK <whxway@whu.edu.cn>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^2.8.2"
+httpx = "^0.27.0"
+loguru = "^0.7.2"
+arrow = "^1.3.0"
+python-dotenv = "^1.0.1"
+pydantic-settings = "^2.3.4"
+
+
+[tool.poetry.group.test.dependencies]
+ipython = "^8.26.0"
+jupyter = "^1.0.0"
+ipykernel = "^6.29.5"
+pytest = "^8.3.2"
+anyio = "^4.4.0"
+trio = "^0.26.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
