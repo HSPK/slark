@@ -1,7 +1,7 @@
 from typing import Union
-from typing_extensions import Literal
 
 import httpx
+from typing_extensions import Literal
 
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH
@@ -32,9 +32,7 @@ class AsyncTable(AsyncAPIResource):
             dict: _description_
         """
         return await self._get(
-            API_PATH.spreadsheets.get_spreadsheet_info.format(
-                spreadsheet_token=sheet_token
-            ),
+            API_PATH.spreadsheets.get_spreadsheet_info.format(spreadsheet_token=sheet_token),
             cast_to=GetSpreadsheetInfoResponse,
             options={"timeout": timeout, "params": {"user_id_type": user_id_type}},
         )

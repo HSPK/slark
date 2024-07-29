@@ -1,7 +1,7 @@
-from typing import Union, List
-from typing_extensions import Literal
+from typing import List, Union
 
 import httpx
+from typing_extensions import Literal
 
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH as path
@@ -18,9 +18,7 @@ class AsyncData(AsyncAPIResource):
         timeout: Union[httpx.Timeout, None] = None,
     ):
         return await self._post(
-            path.spreadsheets.data.prepend_data.format(
-                spreadsheetToken=spreadsheet_token
-            ),
+            path.spreadsheets.data.prepend_data.format(spreadsheetToken=spreadsheet_token),
             body=data.PrependDataBody(
                 valueRange=data.WriteDataValueRange(range=range, values=values)
             ).model_dump(),
@@ -61,18 +59,14 @@ class AsyncData(AsyncAPIResource):
             AppendDataResponse: AppendDataResponse
         """
         return await self._post(
-            path.spreadsheets.data.append_data.format(
-                spreadsheetToken=spreadsheet_token
-            ),
+            path.spreadsheets.data.append_data.format(spreadsheetToken=spreadsheet_token),
             body=data.AppendDataBody(
                 valueRange=data.WriteDataValueRange(range=range, values=values)
             ).model_dump(),
             cast_to=data.AppendDataResponse,
             options={
                 "timeout": timeout,
-                "params": data.AppendDataParams(
-                    insertDataOption=insertDataOption
-                ).model_dump(),
+                "params": data.AppendDataParams(insertDataOption=insertDataOption).model_dump(),
             },
         )
 
@@ -201,9 +195,7 @@ class AsyncData(AsyncAPIResource):
         timeout: Union[httpx.Timeout, None] = None,
     ):
         return await self._get(
-            path.spreadsheets.data.read_multi_range_data.format(
-                spreadsheetToken=spreadsheet_token
-            ),
+            path.spreadsheets.data.read_multi_range_data.format(spreadsheetToken=spreadsheet_token),
             cast_to=data.ReadMultiRangeResponse,
             options={
                 "params": data.ReadMultiRangeParams(

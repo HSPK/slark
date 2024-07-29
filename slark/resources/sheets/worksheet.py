@@ -27,9 +27,7 @@ class AsyncWorksheet(AsyncAPIResource):
             GetAllWorksheetsInfoResponse: 所有工作表信息。
         """
         return await self._get(
-            API_PATH.spreadsheets.get_all_worksheets.format(
-                spreadsheet_token=sheet_token
-            ),
+            API_PATH.spreadsheets.get_all_worksheets.format(spreadsheet_token=sheet_token),
             cast_to=GetAllWorksheetsInfoResponse,
             options={"timeout": timeout},
         )

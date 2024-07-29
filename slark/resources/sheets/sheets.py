@@ -43,9 +43,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
                 r"\/sheets\/([^\/\?]+)(?:\?sheet=([^\/]+))?", url
             )[0]
         elif "/wiki/" in url:
-            wiki_token, sheet_id = re.findall(
-                r"\/wiki\/([^\/\?]+)(?:\?sheet=([^\/]+))?", url
-            )[0]
+            wiki_token, sheet_id = re.findall(r"\/wiki\/([^\/\?]+)(?:\?sheet=([^\/]+))?", url)[0]
             node_info = (
                 await self._client.knowledge_space.nodes.get_node_info(wiki_token)
             ).data.node
@@ -54,16 +52,12 @@ class AsyncSpreadsheets(AsyncAPIResource):
             spreadsheet_token = node_info.obj_token
         assert spreadsheet_token, "Sheet token is not found"
         if not sheet_id:
-            info = (
-                await self.worksheet.get_all_worksheets_info(spreadsheet_token)
-            ).data.sheets[0]
+            info = (await self.worksheet.get_all_worksheets_info(spreadsheet_token)).data.sheets[0]
             sheet_id = info.sheet_id
 
         else:
             info = (
-                await self.worksheet.get_worksheet_info(
-                    spreadsheet_token, sheet_id=sheet_id
-                )
+                await self.worksheet.get_worksheet_info(spreadsheet_token, sheet_id=sheet_id)
             ).data.sheet
         sheet_range = Range(
             rows=info.grid_properties.row_count,
@@ -188,9 +182,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
             if mode == "overwrite":
                 res = await self.data.write_single_range_data(**write_kwargs)
             elif mode == "append":
-                res = await self.data.append_data(
-                    **write_kwargs, insertDataOption=insertDataOption
-                )
+                res = await self.data.append_data(**write_kwargs, insertDataOption=insertDataOption)
             elif mode == "prepend":
                 res = await self.data.prepend_data(**write_kwargs)
             else:
@@ -221,9 +213,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
         )
 
         logger.debug(f"Writing data to {url} with mode {mode}, range {write_range}")
-        return await self._write_batch(
-            info.spreadsheet_token, write_range, values, mode=mode
-        )
+        return await self._write_batch(info.spreadsheet_token, write_range, values, mode=mode)
 
     async def write(
         self,
