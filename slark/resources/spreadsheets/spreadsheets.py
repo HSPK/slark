@@ -1,6 +1,7 @@
 import re
-from typing import Union, List
+from typing import List, Union
 
+import httpx
 import pandas as pd
 from loguru import logger
 from pydantic import BaseModel
@@ -85,8 +86,18 @@ class AsyncSpreadsheets(AsyncAPIResource):
         cols: Union[int, None] = None,
         has_header: bool = True,
         dropna: bool = True,
+        valueRenderOption: Union[
+            Literal["ToString", "Formula", "FormattedValue", "UnformattedValue"], None
+        ] = None,
+        dateTimeRenderOption: Union[Literal["FormattedString"], None] = None,
+        user_id_type: Union[Literal["open_id", "union_id"], None] = None,
+        timeout: Union[httpx.Timeout, None] = None,
     ) -> pd.DataFrame:
         """从电子表格读取数据
+
+            使用限制
+            该接口返回数据的最大限制为 10 MB。
+            该接口不支持获取跨表引用和数组公式的计算结果。
 
         Args:
             url (str): 电子表格的 URL 链接
@@ -96,6 +107,22 @@ class AsyncSpreadsheets(AsyncAPIResource):
             cols (Union[int, None], optional): 读取列数. Defaults to None.
             has_header (bool, optional): 是否包括标题. Defaults to True.
             dropna (bool, optional): 是否去除全为空的行/列. Defaults to True.
+
+            valueRenderOption (Literal[ &quot;ToString&quot;, &quot;Formula&quot;, &quot;FormattedValue&quot;, &quot;UnformattedValue&quot; ], None, optional): 指定单元格数据的格式。可选值如下所示。当参数缺省时，默认不进行公式计算，返回公式本身，且单元格为数值格式。
+            ToString：返回纯文本的值（数值类型除外）
+            Formula：单元格中含有公式时，返回公式本身
+            FormattedValue：计算并格式化单元格
+            UnformattedValue：计算但不对单元格进行格式化. Defaults to None.
+
+            dateTimeRenderOption (Literal[&quot;FormattedString&quot;], None, optional):
+            指定数据类型为日期、时间、或时间日期的单元格数据的格式。
+            若不传值，默认返回浮点数值，整数部分为自 1899 年 12 月 30 日以来的天数；小数部分为该时间占 24 小时的份额。例如：若时间为 1900 年 1 月 1 日中午 12 点，则默认返回 2.5。其中，2 表示 1900 年 1 月 1 日为 1899 年12 月 30 日之后的 2 天；0.5 表示 12 点占 24 小时的二分之一，即 12/24=0.5。
+            可选值为 FormattedString，此时接口将计算并对日期、时间、或时间日期类型的数据格式化并返回格式化后的字符串，但不会对数字进行格式化。. Defaults to None.
+
+            user_id_type (Literal[&quot;open_id&quot;, &quot;union_id&quot;], None, optional):
+            当单元格中包含@用户等涉及用户信息的元素时，该参数可指定返回的用户 ID 类型。默认为 lark_id，建议选择 open_id 或 union_id. Defaults to None.
+
+            timeout (Union[httpx.Timeout, None], optional): _description_. Defaults to None.
 
         Returns:
             pd.DataFrame: 读取的数据
@@ -111,7 +138,12 @@ class AsyncSpreadsheets(AsyncAPIResource):
             )
         )
         data = await self.data.read_single_range_data(
-            info.spreadsheet_token, range=read_range.excel
+            info.spreadsheet_token,
+            range=read_range.excel,
+            valueRenderOption=valueRenderOption,
+            dateTimeRenderOption=dateTimeRenderOption,
+            user_id_type=user_id_type,
+            timeout=timeout,
         )
         return values_to_dataframe(
             data.data.valueRange.values, has_header=has_header, dropna=dropna
@@ -125,6 +157,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
         mode: Literal["overwrite", "append", "prepend"],
         row_batch_size: int = DEFAULT_WRITE_ROW_BATCH_SIZE,
         col_batch_size: int = DEFAULT_WRITE_COL_BATCH_SIZE,
+        insertDataOption: Literal["OVERWRITE", "INSERT_ROWS"] = "OVERWRITE",
     ):
         def batch_range_values():
             for start_row in range(0, write_range.rows, row_batch_size):
@@ -155,7 +188,9 @@ class AsyncSpreadsheets(AsyncAPIResource):
             if mode == "overwrite":
                 res = await self.data.write_single_range_data(**write_kwargs)
             elif mode == "append":
-                res = await self.data.append_data(**write_kwargs)
+                res = await self.data.append_data(
+                    **write_kwargs, insertDataOption=insertDataOption
+                )
             elif mode == "prepend":
                 res = await self.data.prepend_data(**write_kwargs)
             else:
@@ -215,6 +250,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
         data: pd.DataFrame,
         start_row: int = 0,
         start_col: int = 0,
+        insertDataOption: Literal["OVERWRITE", "INSERT_ROWS"] = "OVERWRITE",
     ):
         return await self._write(
             url,
@@ -223,6 +259,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
             start_col=start_col,
             has_header=False,
             mode="append",
+            insertDataOption=insertDataOption,
         )
 
     async def prepend(
