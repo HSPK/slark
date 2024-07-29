@@ -1,12 +1,14 @@
+from typing import Union, List
+
 from slark.types.card.card import (
     BaseElement,
     ColumnElement,
     ColumnSetElement,
     DivElement,
-    IconElement,
-    InteractiveCard,
     I18nBody,
     I18nHeader,
+    IconElement,
+    InteractiveCard,
     MDElement,
     PlainTextElement,
     TitleHeader,
@@ -34,7 +36,7 @@ class InteractiveCardBuilder:
         self.elements.append(build_heading_text_element(content))
         return self
 
-    def add_single_column_set_element(self, elements: list[BaseElement]):
+    def add_single_column_set_element(self, elements: List[BaseElement]):
         self.elements.append(build_single_column_set_element(elements))
         return self
 
@@ -46,12 +48,12 @@ class InteractiveCardBuilder:
         self.header = build_header_with_icon(title, subtitle, template, icon)
         return self
 
-    def build(self, header: TitleHeader | None = None) -> InteractiveCard:
+    def build(self, header: Union[TitleHeader, None] = None) -> InteractiveCard:
         return build_card(self.elements, header)
 
 
 def build_card(
-    elements: list[BaseElement], header: TitleHeader | None = None
+    elements: List[BaseElement], header: Union[TitleHeader, None] = None
 ) -> InteractiveCard:
     _header = {} if header is None else I18nHeader(zh_cn=header)
     return InteractiveCard(
@@ -66,7 +68,7 @@ def build_heading_text_element(content: str):
     )
 
 
-def build_single_column_set_element(elements: list[BaseElement]) -> ColumnSetElement:
+def build_single_column_set_element(elements: List[BaseElement]) -> ColumnSetElement:
     return ColumnSetElement(columns=[ColumnElement(elements=elements)])
 
 

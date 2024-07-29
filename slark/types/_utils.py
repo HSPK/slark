@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Callable, Generic, overload, TypeVar
+from typing import TYPE_CHECKING, Any, Callable, Generic, overload, TypeVar, Union
 from typing_extensions import Self
 
 _T = TypeVar("_T")
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     class typed_cached_property(Generic[_T]):
         func: Callable[[Any], _T]
-        attrname: str | None
+        attrname: Union[str, None]
 
         def __init__(self, func: Callable[[Any], _T]) -> None: ...
 

@@ -1,3 +1,4 @@
+from typing import Tuple
 from pydantic import BaseModel
 
 
@@ -11,7 +12,7 @@ def row_column_to_excel(row: int, column: int) -> str:
     return excel + str(row + 1)
 
 
-def excel_to_row_column(excel: str) -> tuple[int, int]:
+def excel_to_row_column(excel: str) -> Tuple[int, int]:
     """Convert excel to row and column.
     For example, A1 => 0,0, A2 => 1,0, AA1 => 0,26"""
     column = 0

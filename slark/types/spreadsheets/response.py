@@ -1,6 +1,9 @@
-from slark.types.response import BaseResponse
-from typing import Literal
+from typing import List, Union
+
 from pydantic import BaseModel
+from typing_extensions import Literal
+
+from slark.types.response import BaseResponse
 
 
 class GetSpreadsheetInfoResponseDataSpreadsheet(BaseModel):
@@ -45,11 +48,11 @@ class WorksheetInfo(BaseModel):
     """工作表索引位置，索引从 0 开始计数。"""
     hidden: bool
     """工作表是否被隐藏"""
-    grid_properties: WorksheetGridProperties | None = None
+    grid_properties: Union[WorksheetGridProperties, None] = None
     """单元格属性，仅当 resource_type 为 sheet 即工作表类型为电子表格时返回。"""
     resource_type: Literal["sheet", "bitable", "#UNSUPPORTED_TYPE"]
     """工作表类型，sheet 为工作表，bitable 为多维表格，#UNSUPPORTED_TYPE 为不支持的类型。"""
-    merges: list[WorksheetMerge] | None = None
+    merges: Union[List[WorksheetMerge], None] = None
     """合并单元格的相关信息。没有合并单元格则不返回。"""
 
 
@@ -62,7 +65,7 @@ class GetWorksheetInfoResponse(BaseResponse):
 
 
 class GetAllWorksheetsInfoResponseData(BaseModel):
-    sheets: list[WorksheetInfo]
+    sheets: List[WorksheetInfo]
 
 
 class GetAllWorksheetsInfoResponse(BaseResponse):

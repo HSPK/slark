@@ -1,12 +1,18 @@
 import inspect
-from typing import TYPE_CHECKING, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Dict, Type, TypeVar, Union, cast
 
+import anyio
 import httpx
 import pydantic
 from httpx import URL
 from loguru import logger
 
-from slark._constants import DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT
+from slark._constants import (
+    DEFAULT_MAX_RETRIES,
+    DEFAULT_TIMEOUT,
+    INITIAL_RETRY_DELAY,
+    MAX_RETRY_DELAY,
+)
 from slark.types._request.request import FinalRequestOptions, RequestOptions
 from slark.types.exceptions import errors as err
 
@@ -32,10 +38,10 @@ class AsyncAPIClient:
     def __init__(
         self,
         *,
-        base_url: str | URL,
+        base_url: Union[str, URL],
         max_retries: int = DEFAULT_MAX_RETRIES,
         timeout: httpx.Timeout = DEFAULT_TIMEOUT,
-        proxies: httpx._types.ProxyTypes | None = None,
+        proxies: Union[None, httpx._types.ProxyTypes] = None,
     ):
         self._client = httpx.AsyncClient(
             base_url=base_url, timeout=timeout, proxies=proxies
@@ -89,26 +95,68 @@ class AsyncAPIClient:
             code=body["code"], msg=body.get("msg", ""), context=body
         )
 
-    async def request(
+    async def _retry_request(
         self,
         cast_to: Type[ResponseT],
         options: FinalRequestOptions,
-        remaining_retries: int | None = None,
+        remaining_retries: int,
+    ) -> ResponseT:
+        remaining = remaining_retries - 1
+        if remaining == 1:
+            logger.debug("1 retry left")
+        else:
+            logger.debug(f"{remaining} retries left")
+        max_retries = options.get_max_retries(self.max_retries)
+        retry_timeout = min(
+            INITIAL_RETRY_DELAY * 2 ** (max_retries - remaining), MAX_RETRY_DELAY
+        )
+        logger.info(f"Retrying {options.url} in {retry_timeout} seconds")
+        await anyio.sleep(retry_timeout)
+
+        return await self._request(
+            cast_to=cast_to,
+            options=options,
+            remaining_retries=remaining,
+        )
+
+    def _should_retry(self, response: httpx.Response) -> bool:
+        logger.debug(f"Server error {response.status_code}")
+        if response.status_code >= 500:
+            return True
+        return False
+
+    async def _request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        remaining_retries: Union[None, int] = None,
     ) -> ResponseT:
         request = await self._build_request(options)
+        retries = (
+            remaining_retries
+            if remaining_retries is not None
+            else options.get_max_retries(self.max_retries)
+        )
+
         try:
             response = await self._client.send(request)
         except httpx.TimeoutException as e:
             logger.debug(f"Request timed out: {e}")
+            if retries > 0:
+                return await self._retry_request(cast_to, options, retries)
             raise err.APITimeoutError(context={"request": request}) from e
         except Exception as e:
             logger.debug(f"Request failed: {e}")
+            if retries > 0:
+                return await self._retry_request(cast_to, options, retries)
             raise err.APIConnectionError(context={"request": request}) from e
 
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as e:
             logger.debug(f"Request failed: {e}")
+            if retries > 0 and self._should_retry(response):
+                return await self._retry_request(cast_to, options, retries)
             raise self._make_status_error_from_response(e.response) from e
         if response.json()["code"] != 0:
             raise self._make_status_error_from_response(response)
@@ -118,6 +166,14 @@ class AsyncAPIClient:
             return cast(ResponseT, response.json())
         except Exception as e:
             raise err.BadResponseError(str(e), context={"response": response.json()})
+
+    async def request(
+        self,
+        cast_to: Type[ResponseT],
+        options: FinalRequestOptions,
+        remaining_retries: Union[int, None] = None,
+    ):
+        return await self._request(cast_to, options, remaining_retries)
 
     async def get(
         self,
@@ -133,7 +189,7 @@ class AsyncAPIClient:
         self,
         path: str,
         *,
-        body: dict | None = None,
+        body: Union[Dict, None] = None,
         cast_to: Type[ResponseT],
         options: RequestOptions = {},
     ) -> ResponseT:
@@ -144,7 +200,7 @@ class AsyncAPIClient:
         self,
         path: str,
         *,
-        body: dict | None = None,
+        body: Union[Dict, None] = None,
         cast_to: Type[ResponseT],
         options: RequestOptions = {},
     ) -> ResponseT:
@@ -165,7 +221,7 @@ class AsyncAPIClient:
         self,
         path: str,
         *,
-        body: dict | None = None,
+        body: Union[Dict, None] = None,
         cast_to: Type[ResponseT],
         options: RequestOptions = {},
     ) -> ResponseT:

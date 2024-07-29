@@ -1,3 +1,5 @@
+from typing import Dict, Union, List
+
 from pydantic.v1 import BaseModel
 
 
@@ -15,9 +17,9 @@ class MDElement(BaseElement):
 class PlainTextElement(BaseElement):
     tag: str = "plain_text"
     content: str
-    text_size: str | None = None
-    text_align: str | None = None
-    text_color: str | None = None
+    text_size: Union[str, None] = None
+    text_align: Union[str, None] = None
+    text_color: Union[str, None] = None
 
 
 class IconElement(BaseElement):
@@ -26,12 +28,12 @@ class IconElement(BaseElement):
 
 
 class I18nBody(BaseModel):
-    zh_cn: list[BaseElement] = []
+    zh_cn: List[BaseElement] = []
 
 
 class ColumnElement(BaseElement):
     tag: str = "column"
-    elements: list[BaseElement]
+    elements: List[BaseElement]
     width: str = "weighted"
     weight: int = 1
 
@@ -41,7 +43,7 @@ class ColumnSetElement(BaseElement):
     flex_mode: str = "none"
     horizontal_spacing: str = "default"
     background_style: str = "default"
-    columns: list[ColumnElement]
+    columns: List[ColumnElement]
 
 
 class DivElement(BaseElement):
@@ -61,6 +63,6 @@ class I18nHeader(BaseModel):
 
 
 class InteractiveCard(BaseModel):
-    config: dict = {}
+    config: Dict = {}
     i18n_elements: I18nBody = I18nBody()
-    i18n_header: I18nHeader | dict = {}
+    i18n_header: Union[I18nHeader, Dict] = {}

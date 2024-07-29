@@ -1,3 +1,5 @@
+from typing import Union
+
 import httpx
 from loguru import logger
 
@@ -14,22 +16,22 @@ class AsyncLark(AsyncAPIClient):
     knowledge_space: resources.KnowledgeSpace
     sheets: resources.AsyncSpreadsheets
 
-    _app_id: str | None
-    _app_secret: str | None
-    _webhook_url: str | None
-    _token: TokenBase | None
+    _app_id: Union[str, None]
+    _app_secret: Union[str, None]
+    _webhook_url: Union[str, None]
+    _token: Union[TokenBase, None]
     _token_type: CredentailTypes
 
     def __init__(
         self,
         *,
-        app_id: str | None = None,
-        app_secret: str | None = None,
-        webhook: str | None = None,
-        base_url: str | httpx.URL = "https://open.feishu.cn/open-apis/",
+        app_id: Union[str, None] = None,
+        app_secret: Union[str, None] = None,
+        webhook: Union[str, None] = None,
+        base_url: Union[str, httpx.URL] = "https://open.feishu.cn/open-apis/",
         max_retries: int = DEFAULT_MAX_RETRIES,
         timeout: httpx.Timeout = DEFAULT_TIMEOUT,
-        proxies: httpx._types.ProxyTypes | None = None,
+        proxies: Union[httpx._types.ProxyTypes, None] = None,
         token_type: CredentailTypes = "tenant",
     ):
         self._app_id = app_id

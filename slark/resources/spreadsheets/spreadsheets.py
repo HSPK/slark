@@ -1,11 +1,12 @@
 import re
-from typing import Literal
+from typing import Union, List
 
 import pandas as pd
 from loguru import logger
 from pydantic import BaseModel
+from typing_extensions import Literal
 
-from slark._constants import DEFAULT_WRITE_ROW_BATCH_SIZE, DEFAULT_WRITE_COL_BATCH_SIZE
+from slark._constants import DEFAULT_WRITE_COL_BATCH_SIZE, DEFAULT_WRITE_ROW_BATCH_SIZE
 from slark.resources._resources import AsyncAPIResource
 from slark.types import CellTypes, Range
 from slark.types._utils import cached_property
@@ -80,8 +81,8 @@ class AsyncSpreadsheets(AsyncAPIResource):
         *,
         start_row: int = 0,
         start_col: int = 0,
-        rows: int | None = None,
-        cols: int | None = None,
+        rows: Union[int, None] = None,
+        cols: Union[int, None] = None,
         has_header: bool = True,
         dropna: bool = True,
     ) -> pd.DataFrame:
@@ -91,8 +92,8 @@ class AsyncSpreadsheets(AsyncAPIResource):
             url (str): 电子表格的 URL 链接
             start_row (int, optional): 起始行数. Defaults to 0.
             start_col (int, optional): 起始列数. Defaults to 0.
-            rows (int | None, optional): 读取行数. Defaults to None.
-            cols (int | None, optional): 读取列数. Defaults to None.
+            rows (Union[int, None], optional): 读取行数. Defaults to None.
+            cols (Union[int, None], optional): 读取列数. Defaults to None.
             has_header (bool, optional): 是否包括标题. Defaults to True.
             dropna (bool, optional): 是否去除全为空的行/列. Defaults to True.
 
@@ -120,7 +121,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
         self,
         spreadsheet_token: str,
         write_range: Range,
-        values: list[list[CellTypes]],
+        values: List[List[CellTypes]],
         mode: Literal["overwrite", "append", "prepend"],
         row_batch_size: int = DEFAULT_WRITE_ROW_BATCH_SIZE,
         col_batch_size: int = DEFAULT_WRITE_COL_BATCH_SIZE,

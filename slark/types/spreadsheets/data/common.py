@@ -1,5 +1,7 @@
+from typing import Union
+from typing_extensions import Literal
+
 from pydantic import BaseModel, ConfigDict
-from typing import Literal, Union
 
 
 class SegmentStyle(BaseModel):
@@ -14,7 +16,7 @@ class SegmentStyle(BaseModel):
 class BaseCell(BaseModel):
     type: str
     text: str
-    segment_style: SegmentStyle | None = None
+    segment_style: Union[SegmentStyle, None] = None
 
     model_config = ConfigDict(extra="allow")
 

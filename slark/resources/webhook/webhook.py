@@ -1,3 +1,5 @@
+from typing import Union
+
 import httpx
 
 from slark.resources._resources import AsyncAPIResource
@@ -9,7 +11,7 @@ from slark.utils.time import datetime_now
 
 class AsyncWebhook(AsyncAPIResource):
     async def post_feishu_card(
-        self, card: InteractiveCard, timeout: httpx.Timeout | None = None
+        self, card: InteractiveCard, timeout: Union[httpx.Timeout, None] = None
     ):
         return await self._post(
             self._client._webhook_url,
@@ -26,8 +28,8 @@ class AsyncWebhook(AsyncAPIResource):
         msg: str,
         traceback: str,
         title,
-        subtitle: str | None = None,
-        timeout: httpx.Timeout | None = None,
+        subtitle: Union[str, None] = None,
+        timeout: Union[httpx.Timeout, None] = None,
     ):
         if subtitle is None:
             subtitle = datetime_now()
@@ -40,8 +42,8 @@ class AsyncWebhook(AsyncAPIResource):
         self,
         msg: str,
         title,
-        subtitle: str | None = None,
-        timeout: httpx.Timeout | None = None,
+        subtitle: Union[str, None] = None,
+        timeout: Union[httpx.Timeout, None] = None,
     ):
         if subtitle is None:
             subtitle = datetime_now()

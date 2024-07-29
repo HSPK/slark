@@ -1,6 +1,7 @@
-from slark.types.response.base import BaseResponse
 from pydantic import BaseModel
-from typing import Literal
+from typing_extensions import Literal
+
+from slark.types.response.base import BaseResponse
 
 
 class GetNodeResponseDataNode(BaseModel):

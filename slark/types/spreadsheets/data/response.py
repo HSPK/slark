@@ -1,5 +1,9 @@
-from slark.types.response import BaseResponse
+from typing import List
+
 from pydantic import BaseModel
+
+from slark.types.response import BaseResponse
+
 from .common import CellTypes
 
 
@@ -44,7 +48,7 @@ class ReadDataValueRange(BaseModel):
     """读取的范围。为空时表示查询范围没有数据。"""
     revision: int
     """工作表的版本号。从 0 开始计数，更新一次版本号加一。"""
-    values: list[list[CellTypes]]
+    values: List[List[CellTypes]]
     """指定范围中的数据"""
 
 
@@ -61,7 +65,7 @@ class ReadSingleRangeResponse(BaseResponse):
 class ReadMultiRangeResponseData(BaseModel):
     revision: int
     spreadsheetToken: str
-    valueRanges: list[ReadDataValueRange]
+    valueRanges: List[ReadDataValueRange]
 
 
 class ReadMultiRangeResponse(BaseResponse):
@@ -87,7 +91,7 @@ class WriteMultiRangeResponseDataResponse(BaseModel):
 class WriteMultiRangeResponseData(BaseModel):
     revision: int
     spreadsheetToken: str
-    responses: list[WriteMultiRangeResponseDataResponse]
+    responses: List[WriteMultiRangeResponseDataResponse]
 
 
 class WriteMultiRangeResponse(BaseResponse):

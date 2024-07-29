@@ -1,19 +1,23 @@
+from time import time
+from typing import Union
+
+import httpx
+
+from slark.resources.api_path import API_PATH
 from slark.types.auth import (
     GetTenantAccessTokenParams,
     GetTenantAccessTokenResponse,
     TenantAccessToken,
 )
-import httpx
+
 from .._resources import AsyncAPIResource
-from slark.resources.api_path import API_PATH
-from time import time
 
 NETWORK_DELAY_AJUSTMENT = 5
 
 
 class Token(AsyncAPIResource):
     async def get_tenant_access_token(
-        self, timeout: httpx.Timeout | None = None
+        self, timeout: Union[httpx.Timeout, None] = None
     ) -> TenantAccessToken:
         response = await self._post(
             API_PATH.auth.get_tenant_access_token,

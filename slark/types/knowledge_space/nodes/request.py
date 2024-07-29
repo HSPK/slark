@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Literal
+from typing_extensions import Literal
 
 NodeTypes = Literal[
     "doc", "docx", "sheet", "mindnote", "bitable", "file", "slides", "wiki"

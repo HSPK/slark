@@ -1,8 +1,11 @@
+from typing import Union
+
+import httpx
+
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH
 from slark.types.knowledge_space.nodes.request import GetNodeQuery, NodeTypes
 from slark.types.knowledge_space.nodes.response import GetNodeResponse
-import httpx
 
 
 class Nodes(AsyncAPIResource):
@@ -10,7 +13,7 @@ class Nodes(AsyncAPIResource):
         self,
         token: str,
         obj_type: NodeTypes = "wiki",
-        timeout: httpx.Timeout | None = None,
+        timeout: Union[httpx.Timeout,None ]= None,
     ) -> GetNodeResponse:
         return await self._get(
             API_PATH.knowledge_space.nodes.get_node,

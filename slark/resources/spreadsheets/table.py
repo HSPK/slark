@@ -1,4 +1,5 @@
-from typing import Literal
+from typing import Union
+from typing_extensions import Literal
 
 import httpx
 
@@ -13,7 +14,7 @@ class AsyncTable(AsyncAPIResource):
         sheet_token: str,
         *,
         user_id_type: Literal["open_id", "union_id", "user_id"] = "open_id",
-        timeout: httpx.Timeout | None = None,
+        timeout: Union[httpx.Timeout, None] = None,
     ) -> dict:
         """根据电子表格 token 获取电子表格的基础信息，包括电子表格的所有者、URL 链接等。
         https://open.feishu.cn/document/server-docs/docs/sheets-v3/spreadsheet/get

@@ -1,6 +1,6 @@
 from slark.resources._resources import AsyncAPIResource
-from slark.types._utils import cached_property
 from slark.resources.knowledge_space.nodes import Nodes
+from slark.types._utils import cached_property
 
 
 class KnowledgeSpace(AsyncAPIResource):

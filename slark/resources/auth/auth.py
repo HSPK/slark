@@ -1,4 +1,5 @@
 from slark.types._utils import cached_property
+
 from .._resources import AsyncAPIResource
 from .token import Token
 

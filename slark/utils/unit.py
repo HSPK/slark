@@ -1,9 +1,12 @@
-from slark.types.spreadsheets.data import CellTypes
+from typing import List
+
 import pandas as pd
+
+from slark.types.spreadsheets.data import CellTypes
 
 
 def values_to_dataframe(
-    values: list[list[CellTypes]], *, has_header: bool = True, dropna: bool = True
+    values: List[List[CellTypes]], *, has_header: bool = True, dropna: bool = True
 ) -> pd.DataFrame:
     values = [
         [cell.text if hasattr(cell, "text") else cell for cell in row] for row in values
@@ -19,7 +22,7 @@ def values_to_dataframe(
 
 def dataframe_to_values(
     df: pd.DataFrame, *, has_header: bool = True
-) -> list[list[CellTypes]]:
+) -> List[List[CellTypes]]:
     if has_header:
         values = [df.columns.tolist()] + df.values.tolist()
     else:

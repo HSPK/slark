@@ -1,3 +1,5 @@
+from typing import Dict, Union
+
 from slark.types.exceptions._base import LarkException
 
 
@@ -16,26 +18,26 @@ class LarkStatusCode:
 
 class AuthenticationRequiredException(LarkException):
     def __init__(
-        self, msg: str = "Require Authentication", context: dict | None = None
+        self, msg: str = "Require Authentication", context: Union[Dict, None] = None
     ):
         super().__init__(LarkStatusCode.REQUIRE_AUTHENTICATION, msg, context)
 
 
 class HttpStatusError(LarkException):
-    def __init__(self, code: int, msg: str, context: dict | None = None):
+    def __init__(self, code: int, msg: str, context: Union[Dict, None] = None):
         super().__init__(code, msg, context)
 
 
 class BadResponseError(LarkException):
-    def __init__(self, msg: str = "Bad Response", context: dict | None = None):
+    def __init__(self, msg: str = "Bad Response", context: Union[Dict, None] = None):
         super().__init__(LarkStatusCode.BAD_RESPONSE, msg, context)
 
 
 class APITimeoutError(LarkException):
-    def __init__(self, msg: str = "Timeout", context: dict | None = None):
+    def __init__(self, msg: str = "Timeout", context: Union[Dict, None] = None):
         super().__init__(LarkStatusCode.APITimeout, msg, context)
 
 
 class APIConnectionError(LarkException):
-    def __init__(self, msg: str = "API Connection Error", context: dict | None = None):
+    def __init__(self, msg: str = "API Connection Error", context: Union[Dict, None] = None):
         super().__init__(LarkStatusCode.APIConnectionError, msg, context)
