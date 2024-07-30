@@ -1,9 +1,12 @@
 import os
+import uuid
 
 import pytest
 from dotenv import find_dotenv, load_dotenv
 
 from slark import AsyncLark
+from slark.types.bitables import common as bc
+from slark.types.bitables.table.common import TableData, TableField
 
 pytestmark = pytest.mark.anyio
 
@@ -34,5 +37,109 @@ async def test_list_tables(client: AsyncLark):
 
 
 async def test_create_table(client: AsyncLark):
-    response = await client.bitables.table.create(app_token, table={"name": "test"})
+    table = TableData(
+        name=f"test/{str(uuid.uuid4())}",
+        default_view_name="test default view",
+        fields=[
+            TableField(
+                field_name="test text",
+                type=bc.FieldType.TEXT,
+            ),
+            TableField(
+                field_name="test barcode",
+                type=bc.FieldType.TEXT,
+                ui_type=bc.UIType.BARCODE,
+            ),
+            TableField(
+                field_name="test number",
+                type=bc.FieldType.NUMBER,
+            ),
+            TableField(
+                field_name="test money",
+                type=bc.FieldType.NUMBER,
+                ui_type=bc.UIType.CURRENCY,
+                property=bc.CurrencyFieldProperty(
+                    formatter="0.00",
+                    currency_code="CNY",
+                ),
+            ),
+            TableField(
+                field_name="test date",
+                type=bc.FieldType.DATE,
+                property=bc.DateTimeFieldProperty(
+                    date_formatter="yyyy-MM-dd HH:mm",
+                ),
+            ),
+            TableField(
+                field_name="test person",
+                type=bc.FieldType.PERSON,
+                property=bc.PersonFieldProperty(
+                    multiple=False,
+                ),
+            ),
+            TableField(
+                field_name="test lookup",
+                type=bc.FieldType.LOOKUP,
+                property=bc.LookupFieldProperty(
+                    table_id=table_id,
+                ),
+            ),
+            TableField(
+                field_name="test duplex link",
+                type=bc.FieldType.DUPLEX_LINK,
+                property=bc.DuplexLinkFieldProperty(
+                    table_id=table_id,
+                ),
+            ),
+            TableField(
+                field_name="test checkbox",
+                type=bc.FieldType.CHECKBOX,
+            ),
+            TableField(
+                field_name="test create time",
+                type=bc.FieldType.CREATED_TIME,
+                property=bc.CreateUpdateTimeFieldProperty(
+                    date_formatter="yyyy-MM-dd HH:mm",
+                ),
+            ),
+            TableField(
+                field_name="test progress",
+                type=bc.FieldType.NUMBER,
+                ui_type=bc.UIType.PROGRESS,
+                property=bc.ProgressFieldProperty(
+                    formatter="0.0",
+                    range_customize=True,
+                    min=0,
+                    max=100,
+                ),
+            ),
+            TableField(
+                field_name="test rating",
+                type=bc.FieldType.NUMBER,
+                ui_type=bc.UIType.RATING,
+                property=bc.RatingFieldProperty(
+                    rating=bc.RatingFieldPropertyRating(symbol="fire"),
+                    min=0,
+                    max=5,
+                ),
+            ),
+            TableField(
+                field_name="test single option",
+                type=bc.FieldType.SINGLE_SELECT,
+                property=bc.OptionFieldProperty(
+                    options=[
+                        bc.OptionFieldPropertyOption(
+                            name="option 1",
+                            color=0,
+                        ),
+                        bc.OptionFieldPropertyOption(
+                            name="option 2",
+                            color=1,
+                        ),
+                    ],
+                ),
+            ),
+        ],
+    )
+    response = await client.bitables.table.create(app_token, table=table)
     assert response.code == 0

@@ -30,6 +30,22 @@ class AsyncTable(AsyncAPIResource):
         page_token: Union[str, None] = None,
         page_size: Union[int, None] = None,
     ):
+        """根据 app_token，获取多维表格下的所有数据表
+        https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/list
+
+        Args:
+            app_token (str): 多维表格的 app_token
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+            page_token (Union[str, None], optional): 分页标记，第一次请求不填，表示从头开始遍历；\
+                分页查询结果还有更多项时会同时返回新的 page_token，下次遍历可采用该 page_token 获取查询结果。\
+                示例值："tblsRc9GRRXKqhvW". Defaults to None.
+            
+            page_size (Union[int, None], optional): 分页大小，示例值：10，默认值：20，数据校验规则：\
+                最大值：100. Defaults to None.
+
+        Returns:
+            ListTableResponse: 数据表列表
+        """
         return await self._get(
             API_PATH.bitables.list_tables.format(app_token=app_token),
             options={
@@ -49,14 +65,22 @@ class AsyncTable(AsyncAPIResource):
         table: TableData,
         timeout: Union[httpx.Timeout, None] = None,
     ):
+        """新增数据表
+
+        Args:
+            app_token (str): 多维表格的 app_token
+            table (TableData): 表格数据
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            CreateTableResponse: 创建返回值
+        """
         return await self._post(
             API_PATH.bitables.create_table.format(app_token=app_token),
-            options={
-                "timeout": timeout,
-                "json_data": CreateTableBody(
-                    table=table,
-                ).model_dump(),
-            },
+            body=CreateTableBody(
+                table=table,
+            ).model_dump(),
+            options={"timeout": timeout},
             cast_to=CreateTableResponse,
         )
 

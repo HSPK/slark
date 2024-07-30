@@ -8,7 +8,7 @@ from slark.types.bitables.field.common import (
     FieldDescription,
     FieldPropertyType,
     FieldType,
-    FieldUIType,
+    UIType,
 )
 from slark.types.bitables.field.request import CreateFieldBody, ListFieldParams, UpdateFieldBody
 from slark.types.bitables.field.response import (
@@ -53,7 +53,7 @@ class AsyncField(AsyncAPIResource):
         field_name: str,
         type: FieldType,
         property: Union[FieldPropertyType, None] = None,
-        ui_type: Union[FieldUIType, None] = None,
+        ui_type: Union[UIType, None] = None,
         disable_sync: Union[bool, None] = None,
         text: Union[FieldDescription, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
@@ -86,7 +86,7 @@ class AsyncField(AsyncAPIResource):
         field_name: str,
         type: FieldType,
         property: Union[FieldPropertyType, None] = None,
-        ui_type: Union[FieldUIType, None] = None,
+        ui_type: Union[UIType, None] = None,
         disable_sync: Union[bool, None] = None,
         text: Union[FieldDescription, None] = None,
         timeout: Union[httpx.Timeout, None] = None,

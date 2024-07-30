@@ -198,6 +198,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
         start_col: int = 0,
         has_header: bool = True,
         mode: Literal["overwrite", "append", "prepend"] = "overwrite",
+        insertDataOption: Literal["OVERWRITE", "INSERT_ROWS"] = "OVERWRITE",
     ):
         write_cols = data.shape[1]
         values = dataframe_to_values(data, has_header=has_header)
@@ -213,7 +214,13 @@ class AsyncSpreadsheets(AsyncAPIResource):
         )
 
         logger.debug(f"Writing data to {url} with mode {mode}, range {write_range}")
-        return await self._write_batch(info.spreadsheet_token, write_range, values, mode=mode)
+        return await self._write_batch(
+            info.spreadsheet_token,
+            write_range,
+            values,
+            mode=mode,
+            insertDataOption=insertDataOption,
+        )
 
     async def write(
         self,
