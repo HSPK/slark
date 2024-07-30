@@ -1,9 +1,10 @@
 import enum
 from typing import List, Union
 
+from pydantic import field_validator
 from typing_extensions import Literal
 
-from slark.types._common import BaseModel, field_validator
+from slark.types._common import BaseModel
 
 
 class TableFieldPropertyOption(BaseModel):
