@@ -1,10 +1,10 @@
 from typing import Dict, TypedDict, Union
 
 import httpx
-from pydantic import BaseModel, ConfigDict
 from typing_extensions import Literal
 
 from slark._constants import DEFAULT_MAX_RETRIES
+from slark.types._common import BaseModel
 
 
 class RequestOptions(TypedDict):
@@ -24,8 +24,6 @@ class FinalRequestOptions(BaseModel):
     timeout: Union[httpx.Timeout, None] = None
     json_data: Union[Dict] = None
     no_auth: bool = False
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def get_max_retries(self, max_retries: int) -> int:
         return self.max_retries if self.max_retries is not None else max_retries

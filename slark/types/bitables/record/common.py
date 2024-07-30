@@ -1,7 +1,8 @@
 from typing import List, Union
 
-from pydantic import BaseModel
 from typing_extensions import Literal
+
+from slark.types._common import BaseModel
 
 
 class MultiLineText(BaseModel):

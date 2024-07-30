@@ -6,8 +6,7 @@ from loguru import logger
 from slark import resources
 from slark._constants import DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT
 from slark.client._client import AsyncAPIClient
-from slark.types import CredentailTypes
-from slark.types.auth import TokenBase
+from slark.types.auth import CredentailTypes, TokenBase
 
 
 class AsyncLark(AsyncAPIClient):

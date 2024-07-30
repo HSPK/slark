@@ -55,6 +55,6 @@ class AsyncBiTable(AsyncAPIResource):
             body=UpdateBitableMetaBody(
                 name=name,
                 is_advanced=is_advanced,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             cast_to=UpdateBitableMetaResponse,
         )

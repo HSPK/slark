@@ -1,7 +1,8 @@
 from typing import Union
 
-from pydantic import BaseModel
 from typing_extensions import Literal
+
+from slark.types._common import BaseModel
 
 from .common import FieldDescription, FieldPropertyType
 

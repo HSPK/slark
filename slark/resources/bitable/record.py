@@ -47,12 +47,12 @@ class AsyncRecord(AsyncAPIResource):
             API_PATH.bitables.create_record.format(app_token=app_token, table_id=table_id),
             body=CreateRecordBody(
                 fields=fields,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={
                 "timeout": timeout,
                 "params": CreateRecordParams(
                     user_id_type=user_id_type, client_token=client_token
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=CreateRecordResponse,
         )
@@ -73,12 +73,10 @@ class AsyncRecord(AsyncAPIResource):
             ),
             body=UpdateRecordBody(
                 fields=fields,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={
                 "timeout": timeout,
-                "params": UpdateRecordParams(user_id_type=user_id_type).model_dump(
-                    exclude_none=True
-                ),
+                "params": UpdateRecordParams(user_id_type=user_id_type).model_dump(),
             },
             cast_to=UpdateRecordResponse,
         )
@@ -122,14 +120,14 @@ class AsyncRecord(AsyncAPIResource):
                 sort=sort,
                 filter=filter,
                 automatic_fields=automatic_fields,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={
                 "timeout": timeout,
                 "params": SearchRecordParams(
                     user_id_type=user_id_type,
                     page_token=page_token,
                     page_size=page_size,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=SearchRecordResponse,
         )
@@ -154,14 +152,14 @@ class AsyncRecord(AsyncAPIResource):
                 user_id_type=user_id_type,
                 with_shared_url=with_shared_url,
                 automatic_fields=automatic_fields,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={
                 "timeout": timeout,
                 "params": SearchRecordParams(
                     user_id_type=user_id_type,
                     page_token=page_token,
                     page_size=page_size,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=BatchGetRecordResponse,
         )
@@ -180,12 +178,12 @@ class AsyncRecord(AsyncAPIResource):
             API_PATH.bitables.batch_create_record.format(app_token=app_token, table_id=table_id),
             body=BatchCreateRecordBody(
                 records=records,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={
                 "timeout": timeout,
                 "params": CreateRecordParams(
                     user_id_type=user_id_type, client_token=client_token
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=BatchCreateRecordResponse,
         )
@@ -203,12 +201,10 @@ class AsyncRecord(AsyncAPIResource):
             API_PATH.bitables.batch_update_record.format(app_token=app_token, table_id=table_id),
             body=BatchUpdateRecordBody(
                 records=records,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={
                 "timeout": timeout,
-                "params": UpdateRecordParams(user_id_type=user_id_type).model_dump(
-                    exclude_none=True
-                ),
+                "params": UpdateRecordParams(user_id_type=user_id_type).model_dump(),
             },
             cast_to=UpdateRecordResponse,
         )
@@ -225,7 +221,7 @@ class AsyncRecord(AsyncAPIResource):
             API_PATH.bitables.batch_delete_record.format(app_token=app_token, table_id=table_id),
             body=BatchDeleteRecordBody(
                 record_ids=record_ids,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={"timeout": timeout},
             cast_to=BatchDeleteRecordResponse,
         )

@@ -4,13 +4,13 @@ from typing import List, Union
 import httpx
 import pandas as pd
 from loguru import logger
-from pydantic import BaseModel
 from typing_extensions import Literal
 
 from slark._constants import DEFAULT_WRITE_COL_BATCH_SIZE, DEFAULT_WRITE_ROW_BATCH_SIZE
 from slark.resources._resources import AsyncAPIResource
-from slark.types import CellTypes, Range
+from slark.types._common import BaseModel
 from slark.types._utils import cached_property
+from slark.types.spreadsheets.data import CellTypes, Range
 from slark.utils import dataframe_to_values, values_to_dataframe
 
 from .data import AsyncData

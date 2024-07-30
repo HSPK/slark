@@ -1,7 +1,9 @@
+import enum
 from typing import List, Union
 
-from pydantic import BaseModel, field_validator
 from typing_extensions import Literal
+
+from slark.types._common import BaseModel, field_validator
 
 
 class TableFieldPropertyOption(BaseModel):
@@ -175,13 +177,34 @@ class TableFieldDescription(BaseModel):
     示例值："请按 name_id 格式填写\n例如：“Alice_20202020”"""
 
 
+class FieldType(enum.Enum):
+    TEXT = 1
+    NUMBER = 2
+    SINGLE_SELECT = 3
+    MULTI_SELECT = 4
+    DATE = 5
+    CHECKBOX = 7
+    USER = 11
+    PHONE = 13
+    URL = 15
+    ATTACHMENT = 17
+    SINGLE_LINK = 18
+    FORMULA = 20
+    DUPLEX_LINK = 21
+    LOCATION = 22
+    GROUP_CHAT = 23
+    CREATED_TIME = 1001
+    MODIFIED_TIME = 1002
+    CREATED_USER = 1003
+    MODIFIED_USER = 1004
+    AUTO_NUMBER = 1005
+
+
 class TableField(BaseModel):
     field_name: str
     """字段名,示例值："文本"""
 
-    type: Literal[
-        1, 2, 3, 4, 5, 7, 11, 13, 15, 17, 18, 20, 21, 22, 23, 1001, 1002, 1003, 1004, 1005
-    ]
+    type: FieldType
     """可选值有：
 
     1：多行文本

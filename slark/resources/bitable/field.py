@@ -40,7 +40,7 @@ class AsyncField(AsyncAPIResource):
                     text_field_as_array=text_field_as_array,
                     page_token=page_token,
                     page_size=page_size,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=ListFieldResponse,
         )
@@ -72,7 +72,7 @@ class AsyncField(AsyncAPIResource):
                 property=property,
                 ui_type=ui_type,
                 description=desp,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={"timeout": timeout},
             cast_to=CreateFieldResponse,
         )
@@ -107,7 +107,7 @@ class AsyncField(AsyncAPIResource):
                 property=property,
                 ui_type=ui_type,
                 description=desp,
-            ).model_dump(exclude_none=True),
+            ).model_dump(),
             options={"timeout": timeout},
             cast_to=UpdateFieldResponse,
         )

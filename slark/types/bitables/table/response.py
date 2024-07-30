@@ -1,7 +1,6 @@
 from typing import List, Union
 
-from pydantic import BaseModel
-
+from slark.types._common import BaseModel
 from slark.types.response import BaseResponse
 
 

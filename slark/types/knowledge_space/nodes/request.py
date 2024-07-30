@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing_extensions import Literal
+
+from slark.types._common import BaseModel
 
 NodeTypes = Literal["doc", "docx", "sheet", "mindnote", "bitable", "file", "slides", "wiki"]
 

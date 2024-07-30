@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from pydantic import BaseModel
+from slark.types._common import BaseModel
 
 
 def row_column_to_excel(row: int, column: int) -> str:

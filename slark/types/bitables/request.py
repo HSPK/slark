@@ -1,6 +1,6 @@
 from typing import Union
 
-from pydantic import BaseModel
+from slark.types._common import BaseModel
 
 
 class UpdateBitableMetaBody(BaseModel):

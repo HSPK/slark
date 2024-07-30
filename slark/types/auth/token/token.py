@@ -1,6 +1,6 @@
 from time import time
 
-from pydantic import BaseModel
+from slark.types._common import BaseModel
 
 
 class TokenBase(BaseModel):

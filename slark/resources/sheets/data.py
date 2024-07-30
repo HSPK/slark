@@ -177,7 +177,7 @@ class AsyncData(AsyncAPIResource):
                     valueRenderOption=valueRenderOption,
                     dateTimeRenderOption=dateTimeRenderOption,
                     user_id_type=user_id_type,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
                 "timeout": timeout,
             },
         )
@@ -203,7 +203,7 @@ class AsyncData(AsyncAPIResource):
                     valueRenderOption=valueRenderOption,
                     dateTimeRenderOption=dateTimeRenderOption,
                     user_id_type=user_id_type,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
                 "timeout": timeout,
             },
         )

@@ -1,4 +1,5 @@
 from .common import CellTypes
+from .range import Range
 from .request import (
     AppendDataBody,
     AppendDataParams,
@@ -19,6 +20,7 @@ from .response import (
 )
 
 __all__ = [
+    "Range",
     "CellTypes",
     "PrependDataBody",
     "AppendDataBody",

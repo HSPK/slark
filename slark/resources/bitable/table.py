@@ -37,7 +37,7 @@ class AsyncTable(AsyncAPIResource):
                 "params": ListTableParams(
                     page_token=page_token,
                     page_size=page_size,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=ListTableResponse,
         )
@@ -55,7 +55,7 @@ class AsyncTable(AsyncAPIResource):
                 "timeout": timeout,
                 "json_data": CreateTableBody(
                     table=table,
-                ).model_dump(exclude_none=True),
+                ).model_dump(),
             },
             cast_to=CreateTableResponse,
         )
@@ -74,9 +74,7 @@ class AsyncTable(AsyncAPIResource):
             cast_to=BatchCreateTableResponse,
             options={
                 "timeout": timeout,
-                "params": BatchCreateTableParams(user_id_type=user_id_type).model_dump(
-                    exclude_none=True
-                ),
+                "params": BatchCreateTableParams(user_id_type=user_id_type).model_dump(),
             },
         )
 
