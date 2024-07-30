@@ -17,9 +17,7 @@ class LarkStatusCode:
 
 
 class AuthenticationRequiredException(LarkException):
-    def __init__(
-        self, msg: str = "Require Authentication", context: Union[Dict, None] = None
-    ):
+    def __init__(self, msg: str = "Require Authentication", context: Union[Dict, None] = None):
         super().__init__(LarkStatusCode.REQUIRE_AUTHENTICATION, msg, context)
 
 

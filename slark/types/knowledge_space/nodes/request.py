@@ -1,9 +1,7 @@
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-NodeTypes = Literal[
-    "doc", "docx", "sheet", "mindnote", "bitable", "file", "slides", "wiki"
-]
+NodeTypes = Literal["doc", "docx", "sheet", "mindnote", "bitable", "file", "slides", "wiki"]
 
 
 class GetNodeQuery(BaseModel):

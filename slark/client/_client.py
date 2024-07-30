@@ -43,9 +43,7 @@ class AsyncAPIClient:
         timeout: httpx.Timeout = DEFAULT_TIMEOUT,
         proxies: Union[None, httpx._types.ProxyTypes] = None,
     ):
-        self._client = httpx.AsyncClient(
-            base_url=base_url, timeout=timeout, proxies=proxies
-        )
+        self._client = httpx.AsyncClient(base_url=base_url, timeout=timeout, proxies=proxies)
         self.max_retries = max_retries
 
     async def get_auth_headers(self) -> dict:
@@ -82,18 +80,14 @@ class AsyncAPIClient:
             **kwargs,
         )
 
-    def _make_status_error_from_response(
-        self, response: httpx.Response
-    ) -> err.LarkException:
+    def _make_status_error_from_response(self, response: httpx.Response) -> err.LarkException:
         try:
             body = response.json()
             if "code" not in body:
                 raise ValueError("No code in response")
         except Exception as e:
             return err.BadResponseError(msg=str(e), context={"response": response.text})
-        return err.LarkException(
-            code=body["code"], msg=body.get("msg", ""), context=body
-        )
+        return err.LarkException(code=body["code"], msg=body.get("msg", ""), context=body)
 
     async def _retry_request(
         self,
@@ -107,9 +101,7 @@ class AsyncAPIClient:
         else:
             logger.debug(f"{remaining} retries left")
         max_retries = options.get_max_retries(self.max_retries)
-        retry_timeout = min(
-            INITIAL_RETRY_DELAY * 2 ** (max_retries - remaining), MAX_RETRY_DELAY
-        )
+        retry_timeout = min(INITIAL_RETRY_DELAY * 2 ** (max_retries - remaining), MAX_RETRY_DELAY)
         logger.info(f"Retrying {options.url} in {retry_timeout} seconds")
         await anyio.sleep(retry_timeout)
 

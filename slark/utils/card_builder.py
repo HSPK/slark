@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List, Union
 
 from slark.types.card.card import (
     BaseElement,
@@ -72,9 +72,7 @@ def build_single_column_set_element(elements: List[BaseElement]) -> ColumnSetEle
     return ColumnSetElement(columns=[ColumnElement(elements=elements)])
 
 
-def build_header_with_icon(
-    title: str, subtitle: str, template: str, icon: str
-) -> TitleHeader:
+def build_header_with_icon(title: str, subtitle: str, template: str, icon: str) -> TitleHeader:
     return TitleHeader(
         title=PlainTextElement(content=title),
         subtitle=PlainTextElement(content=subtitle),
@@ -95,9 +93,7 @@ def build_success_msg_card(msg: str, title: str, subtitle: str):
     )
 
 
-def build_error_msg_card(
-    msg: str, traceback: str, title: str, subtitle: str
-) -> InteractiveCard:
+def build_error_msg_card(msg: str, traceback: str, title: str, subtitle: str) -> InteractiveCard:
     return build_card(
         elements=[
             build_single_column_set_element(

@@ -1,9 +1,9 @@
 import os
 
+import pytest
 from dotenv import find_dotenv, load_dotenv
 
 from slark import AsyncLark
-import pytest
 
 pytestmark = pytest.mark.anyio
 

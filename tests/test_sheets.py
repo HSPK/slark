@@ -1,17 +1,15 @@
 import os
 
+import pandas as pd
+import pytest
 from dotenv import find_dotenv, load_dotenv
 
 from slark import AsyncLark
-import pytest
-import pandas as pd
 
 pytestmark = pytest.mark.anyio
 
 load_dotenv(find_dotenv())
-client = AsyncLark(
-    app_id=os.getenv("TEST_APP_ID"), app_secret=os.getenv("TEST_APP_SECRET")
-)
+client = AsyncLark(app_id=os.getenv("TEST_APP_ID"), app_secret=os.getenv("TEST_APP_SECRET"))
 
 url = os.getenv("TEST_SHEET_URL")
 

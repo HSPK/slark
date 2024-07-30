@@ -13,7 +13,7 @@ class Nodes(AsyncAPIResource):
         self,
         token: str,
         obj_type: NodeTypes = "wiki",
-        timeout: Union[httpx.Timeout,None ]= None,
+        timeout: Union[httpx.Timeout, None] = None,
     ) -> GetNodeResponse:
         return await self._get(
             API_PATH.knowledge_space.nodes.get_node,

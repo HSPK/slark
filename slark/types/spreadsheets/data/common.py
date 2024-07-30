@@ -1,7 +1,7 @@
 from typing import Union
-from typing_extensions import Literal
 
 from pydantic import BaseModel, ConfigDict
+from typing_extensions import Literal
 
 
 class SegmentStyle(BaseModel):
@@ -60,6 +60,4 @@ class MentionDocument(BaseCell):
     objType: Literal["sheet", "doc", "slide", "bitable", "mindnote"]
 
 
-CellTypes = Union[
-    None, str, int, float, bool, LinkWithText, Mention, Formula, MentionDocument
-]
+CellTypes = Union[None, str, int, float, bool, LinkWithText, Mention, Formula, MentionDocument]

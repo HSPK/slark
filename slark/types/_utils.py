@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Callable, Generic, overload, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar, Union, overload
+
 from typing_extensions import Self
 
 _T = TypeVar("_T")
@@ -26,9 +27,7 @@ if TYPE_CHECKING:
         @overload
         def __get__(self, instance: object, owner: type[Any] | None = None) -> _T: ...
 
-        def __get__(
-            self, instance: object, owner: type[Any] | None = None
-        ) -> _T | Self:
+        def __get__(self, instance: object, owner: type[Any] | None = None) -> _T | Self:
             raise NotImplementedError()
 
         def __set_name__(self, owner: type[Any], name: str) -> None: ...

@@ -8,9 +8,7 @@ from slark.types.spreadsheets.data import CellTypes
 def values_to_dataframe(
     values: List[List[CellTypes]], *, has_header: bool = True, dropna: bool = True
 ) -> pd.DataFrame:
-    values = [
-        [cell.text if hasattr(cell, "text") else cell for cell in row] for row in values
-    ]
+    values = [[cell.text if hasattr(cell, "text") else cell for cell in row] for row in values]
     if has_header:
         df = pd.DataFrame(values[1:], columns=values[0])
     else:
@@ -20,9 +18,7 @@ def values_to_dataframe(
     return df
 
 
-def dataframe_to_values(
-    df: pd.DataFrame, *, has_header: bool = True
-) -> List[List[CellTypes]]:
+def dataframe_to_values(df: pd.DataFrame, *, has_header: bool = True) -> List[List[CellTypes]]:
     if has_header:
         values = [df.columns.tolist()] + df.values.tolist()
     else:

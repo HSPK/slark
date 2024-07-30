@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import List, Union
 
 from pydantic import BaseModel
 from typing_extensions import Literal
