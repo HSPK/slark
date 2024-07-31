@@ -100,17 +100,18 @@ class Email(BaseModel):
 
 
 FormulaType = Union[
-    int,
-    str,
-    bool,
-    MultiLineText,
-    User,
-    Group,
-    HyperLink,
-    Attachment,
-    LinkRecord,
-    Location,
-    Email,
+    List[int],
+    List[str],
+    List[float],
+    List[bool],
+    List[MultiLineText],
+    List[User],
+    List[Group],
+    List[HyperLink],
+    List[Attachment],
+    List[LinkRecord],
+    List[Location],
+    List[Email],
 ]
 
 
@@ -141,10 +142,25 @@ class Formula(BaseModel):
     value: List[FormulaType]
 
 
+class Empty(BaseModel):
+    pass
+
+
 FieldValueType = Union[
     int,
     str,
+    float,
     bool,
-    FormulaType,
-    List[FormulaType],
+    User,
+    List[str],
+    List[MultiLineText],
+    List[User],
+    List[Group],
+    HyperLink,
+    List[Attachment],
+    LinkRecord,
+    Location,
+    Formula,
+    Email,
+    Empty,
 ]

@@ -280,7 +280,7 @@ class DeleteRecordResponse(BaseResponse):
 
 
 class BatchDeleteRecordResponseData(BaseModel):
-    records: List[str]
+    records: List[DeleteRecordResponseData]
 
 
 class BatchDeleteRecordResponse(BaseResponse):

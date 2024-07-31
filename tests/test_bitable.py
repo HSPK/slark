@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 
 import pytest
@@ -185,6 +186,128 @@ async def test_update_field(client: AsyncLark):
 async def test_delete_field(client: AsyncLark):
     response = await client.bitables.field.delete(app_token, table_id=table_id, field_id=field_id)
     assert response.code == 0
+
+
+record_ids = []
+
+
+async def test_create_record(client: AsyncLark):
+    global record_ids
+
+    response = await client.bitables.record.create(
+        app_token,
+        table_id=table_ids[0],
+        fields={
+            "test text": "test text",
+            "test barcode": "test barcode",
+            "test number": 1,
+            "test money": 1.0,
+            "test date": int(time.time() * 1000),
+            # "test person": "test person",
+            # "test lookup": "test lookup",
+            # "test duplex link": "test duplex link",
+            "test checkbox": True,
+            "test create time": int(time.time() * 1000),
+            "test progress": 50.0,
+            "test rating": 3,
+            "test single option": "option 1",
+        },
+    )
+    assert response.code == 0
+    record_ids.append(response.data.record.record_id)
+
+
+async def test_batch_create_record(client: AsyncLark):
+    global record_ids
+
+    response = await client.bitables.record.batch_create(
+        app_token,
+        table_id=table_ids[0],
+        records=[
+            {
+                "test text": "test text",
+                "test barcode": "test barcode",
+                "test number": 1,
+                "test money": 1.0,
+                "test date": int(time.time() * 1000),
+                "test checkbox": True,
+                "test create time": int(time.time() * 1000),
+                "test progress": 50.0,
+                "test rating": 3,
+                "test single option": "option 1",
+            },
+            {
+                "test text": "test text",
+                "test barcode": "test barcode",
+                "test number": 1,
+                "test money": 1.0,
+                "test date": int(time.time() * 1000),
+                "test checkbox": True,
+                "test create time": int(time.time() * 1000),
+                "test progress": 50.0,
+                "test rating": 3,
+                "test single option": "option 1",
+            },
+        ],
+    )
+    assert response.code == 0
+    record_ids.extend([record.record_id for record in response.data.records])
+
+
+async def test_list_records(client: AsyncLark):
+    response = await client.bitables.record.search(app_token, table_id=table_ids[0])
+    assert response.code == 0
+    assert record_ids == [record.record_id for record in response.data.items]
+
+
+async def test_batch_get_record(client: AsyncLark):
+    response = await client.bitables.record.batch_get(
+        app_token, table_id=table_ids[0], record_ids=record_ids
+    )
+    assert response.code == 0
+    assert record_ids == [record.record_id for record in response.data.records]
+
+
+async def test_update_record(client: AsyncLark):
+    response = await client.bitables.record.update(
+        app_token,
+        table_id=table_ids[0],
+        record_id=record_ids[0],
+        fields={
+            "test text": "update text",
+            "test barcode": "test barcode",
+            "test number": 1,
+            "test money": 1.0,
+            "test date": int(time.time() * 1000),
+            "test checkbox": True,
+            "test create time": int(time.time() * 1000),
+            "test progress": 30.0,
+            "test rating": 3,
+            "test single option": "option 2",
+        },
+    )
+    assert response.code == 0
+    assert response.data.record.record_id == record_ids[0]
+
+
+async def test_delete_record(client: AsyncLark):
+    global record_ids
+
+    response = await client.bitables.record.delete(
+        app_token, table_id=table_ids[0], record_id=record_ids[0]
+    )
+    assert response.code == 0
+    record_ids.pop(0)
+
+
+async def test_batch_delete_record(client: AsyncLark):
+    global record_ids
+
+    response = await client.bitables.record.batch_delete(
+        app_token, table_id=table_ids[0], record_ids=record_ids
+    )
+    assert response.code == 0
+    record_ids = []
 
 
 async def test_batch_create_table(client: AsyncLark):

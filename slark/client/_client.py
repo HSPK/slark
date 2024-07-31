@@ -157,6 +157,7 @@ class AsyncAPIClient:
                 return cast(ResponseT, cast_to.model_validate(response.json()))
             return cast(ResponseT, response.json())
         except Exception as e:
+            logger.error(f"Encountered Bad Response: {response.json()}")
             raise err.BadResponseError(str(e), context={"response": response.json()})
 
     async def request(

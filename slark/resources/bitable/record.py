@@ -99,7 +99,7 @@ class AsyncRecord(AsyncAPIResource):
         Returns:
             UpdateRecordResponse: 更新记录的返回结果
         """
-        return await self._patch(
+        return await self._put(
             API_PATH.bitables.update_record.format(
                 app_token=app_token, table_id=table_id, record_id=record_id
             ),
@@ -233,7 +233,7 @@ class AsyncRecord(AsyncAPIResource):
             cast_to=BatchGetRecordResponse,
         )
 
-    def batch_create(
+    async def batch_create(
         self,
         app_token: str,
         *,
@@ -257,10 +257,10 @@ class AsyncRecord(AsyncAPIResource):
         Returns:
             BatchCreateRecordResponse: 批量新增记录的返回结果
         """
-        return self._post(
+        return await self._post(
             API_PATH.bitables.batch_create_record.format(app_token=app_token, table_id=table_id),
             body=BatchCreateRecordBody(
-                records=records,
+                records=[{"fields": record} for record in records],
             ).model_dump(),
             options={
                 "timeout": timeout,
@@ -271,7 +271,7 @@ class AsyncRecord(AsyncAPIResource):
             cast_to=BatchCreateRecordResponse,
         )
 
-    def batch_update(
+    async def batch_update(
         self,
         app_token: str,
         *,
@@ -293,7 +293,7 @@ class AsyncRecord(AsyncAPIResource):
         Returns:
             UpdateRecordResponse: 更新记录的返回结果
         """
-        return self._patch(
+        return await self._patch(
             API_PATH.bitables.batch_update_record.format(app_token=app_token, table_id=table_id),
             body=BatchUpdateRecordBody(
                 records=records,
@@ -305,7 +305,7 @@ class AsyncRecord(AsyncAPIResource):
             cast_to=UpdateRecordResponse,
         )
 
-    def batch_delete(
+    async def batch_delete(
         self,
         app_token: str,
         *,
@@ -325,10 +325,10 @@ class AsyncRecord(AsyncAPIResource):
         Returns:
             BatchDeleteRecordResponse: 删除记录的返回结果
         """
-        return self._delete(
+        return await self._post(
             API_PATH.bitables.batch_delete_record.format(app_token=app_token, table_id=table_id),
             body=BatchDeleteRecordBody(
-                record_ids=record_ids,
+                records=record_ids,
             ).model_dump(),
             options={"timeout": timeout},
             cast_to=BatchDeleteRecordResponse,
