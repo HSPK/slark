@@ -9,6 +9,7 @@ from slark.types.bitables.table.common import TableData
 from slark.types.bitables.table.request import (
     BatchCreateTableBody,
     BatchCreateTableParams,
+    BatchDeleteTableBody,
     CreateTableBody,
     ListTableParams,
     UpdateTableBody,
@@ -19,6 +20,7 @@ from slark.types.bitables.table.response import (
     ListTableResponse,
     UpdateTableResponse,
 )
+from slark.types.response import BaseResponse
 
 
 class AsyncTable(AsyncAPIResource):
@@ -123,12 +125,12 @@ class AsyncTable(AsyncAPIResource):
         name: str,
         timeout: Union[httpx.Timeout, None] = None,
     ):
-        """该接口用于更新数据表的基本信息，包括数据表的名称等。
+        r"""该接口用于更新数据表的基本信息，包括数据表的名称等。
 
         Args:
             app_token (str): 多维表格的 app_token
             table_id (str): 多维表格的 table_id
-            name (str): 数据表的新名称。请注意：名称中的首尾空格将会被去除。\n
+            name (str): 数据表的新名称。请注意：名称中的首尾空格将会被去除。
                 如果名称为空或和旧名称相同，接口仍然会返回成功，但是名称不会被更改。\n
                 示例值："数据表的新名称"。\
                 数据校验规则：长度范围：1 字符 ～ 100 字符。正则校验：^[^\[\]\:\\\/\?\*]+$。
@@ -142,4 +144,53 @@ class AsyncTable(AsyncAPIResource):
             body=UpdateTableBody(name=name).model_dump(),
             cast_to=UpdateTableResponse,
             options={"timeout": timeout},
+        )
+
+    async def delete(
+        self,
+        app_token: str,
+        *,
+        table_id: str,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        """删除数据表
+        https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/delete
+
+        Args:
+            app_token (str): 多维表格的 app_token
+            table_id (str): 多维表格的 table_id
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            BaseResponse: 删除返回值
+        """
+        return await self._delete(
+            API_PATH.bitables.delete_table.format(app_token=app_token, table_id=table_id),
+            options={"timeout": timeout},
+            cast_to=BaseResponse,
+        )
+
+    async def batch_delete(
+        self,
+        app_token: str,
+        *,
+        table_ids: List[str],
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        """批量删除数据表
+        https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/batch_delete
+
+        Args:
+            app_token (str): 多维表格的 app_token
+            table_ids (List[str]): 待删除的数据表的 id
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            BaseResponse: 删除返回值
+        """
+        return await self._post(
+            API_PATH.bitables.batch_delete_table.format(app_token=app_token),
+            body=BatchDeleteTableBody(table_ids=table_ids).model_dump(),
+            options={"timeout": timeout},
+            cast_to=BaseResponse,
         )

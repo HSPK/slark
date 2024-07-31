@@ -8,13 +8,14 @@ from slark import AsyncLark
 from slark.types.bitables import common as bc
 from slark.types.bitables.table.common import TableData, TableField
 
-pytestmark = pytest.mark.asyncio(loop_scope="module")
+pytestmark = pytest.mark.asyncio(loop_scope="session")
 
 load_dotenv(find_dotenv())
 app_token = os.getenv("TEST_APP_TOKEN")
 url = os.getenv("TEST_BITABLE_URL")
 
 table_id = None
+table_ids = []
 
 
 async def test_get_bitable_meta(client: AsyncLark):
@@ -37,6 +38,8 @@ async def test_list_tables(client: AsyncLark):
 
 
 async def test_create_table(client: AsyncLark):
+    global table_ids
+
     table = TableData(
         name=f"test/{str(uuid.uuid4())}",
         default_view_name="test default view",
@@ -143,15 +146,73 @@ async def test_create_table(client: AsyncLark):
     )
     response = await client.bitables.table.create(app_token, table=table)
     assert response.code == 0
+    table_ids.append(response.data.table_id)
 
 
-async def test_batch_create_table(client: AsyncLark):
-    names = [f"test/{str(uuid.uuid4())}" for _ in range(10)]
-    response = await client.bitables.table.batch_create(app_token, names=names)
+async def test_list_fields(client: AsyncLark):
+    response = await client.bitables.field.list(app_token, table_id=table_id)
     assert response.code == 0
 
 
+field_id = None
+
+
+async def test_create_field(client: AsyncLark):
+    global field_id
+    response = await client.bitables.field.create(
+        app_token,
+        table_id=table_id,
+        field_name="test field",
+        type=bc.FieldType.TEXT,
+        ui_type=bc.UIType.BARCODE,
+    )
+    assert response.code == 0
+    field_id = response.data.field.field_id
+
+
+async def test_update_field(client: AsyncLark):
+    response = await client.bitables.field.update(
+        app_token,
+        table_id=table_id,
+        field_id=field_id,
+        field_name="update field",
+        type=bc.FieldType.TEXT,
+        ui_type=bc.UIType.TEXT,
+    )
+    assert response.code == 0
+
+
+async def test_delete_field(client: AsyncLark):
+    response = await client.bitables.field.delete(app_token, table_id=table_id, field_id=field_id)
+    assert response.code == 0
+
+
+async def test_batch_create_table(client: AsyncLark):
+    names = [f"test/{str(uuid.uuid4())}" for _ in range(2)]
+    response = await client.bitables.table.batch_create(app_token, names=names)
+    assert response.code == 0
+
+    table_ids.extend(response.data.table_ids)
+
+
 async def test_update_table(client: AsyncLark):
-    name = f"update_test/{str(uuid.uuid4())}"
-    reponse = await client.bitables.table.update(app_token, table_id=table_id, name=name)
+    global table_ids
+    name = "update test"
+    reponse = await client.bitables.table.update(app_token, table_id=table_ids[0], name=name)
     assert reponse.code == 0
+
+
+async def test_delete_table(client: AsyncLark):
+    global table_ids
+
+    response = await client.bitables.table.delete(app_token, table_id=table_ids[0])
+    assert response.code == 0
+    table_ids.pop(0)
+
+
+async def test_batch_delete_table(client: AsyncLark):
+    global table_ids
+
+    response = await client.bitables.table.batch_delete(app_token, table_ids=table_ids)
+    assert response.code == 0
+    table_ids = []

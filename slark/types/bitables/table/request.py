@@ -30,7 +30,7 @@ class BatchDeleteTableBody(BaseModel):
 
 class UpdateTableBody(BaseModel):
     name: str
-    """	
+    r"""	
     数据表的新名称。
 
     请注意：
