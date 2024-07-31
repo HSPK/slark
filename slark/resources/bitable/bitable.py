@@ -1,6 +1,7 @@
 import re
 from typing import List, Union
 
+import pandas as pd
 from pydantic import BaseModel
 
 from slark.resources._resources import AsyncAPIResource
@@ -79,7 +80,19 @@ class AsyncBiTable(AsyncAPIResource):
         field_names: Union[List[str], None] = None,
         raw: bool = False,
         timezone: Union[str, None] = "Asia/Shanghai",
-    ):
+    ) -> Union[dict, pd.DataFrame]:
+        """从多维表格中读取数据
+
+        Args:
+            url (str): 多维表格分享链接
+            rows (Union[int, None], optional): 读取的行数. Defaults to None.
+            field_names (Union[List[str], None], optional): 读取的列名. Defaults to None.
+            raw (bool, optional): 是否返回原始数据. Defaults to False.
+            timezone (Union[str, None], optional): 时区，仅在raw=False时有效. Defaults to "Asia/Shanghai".
+
+        Returns:
+            Union[dict, pd.DataFrame]: 当raw=True时返回原始数据，否则返回DataFrame
+        """
         info = await self.get_bitable_info(url)
 
         items: List[RecordResponseData] = []
@@ -96,7 +109,8 @@ class AsyncBiTable(AsyncAPIResource):
         fields = (
             await self.field.list(app_token=info.app_token, table_id=info.table_id)
         ).data.items
-
+        if field_names is not None:
+            fields = [field for field in fields if field.field_name in field_names]
         while is_continue():
             response = await self.record.search(
                 app_token=info.app_token,
