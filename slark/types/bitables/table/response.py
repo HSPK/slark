@@ -41,12 +41,12 @@ class CreateTableResponse(BaseResponse):
     data: CreateTableResponseData
 
 
-class BatchCreateTableResponseData(BaseModel):
+class BatchCreateTableResponseDataItem(BaseModel):
     name: str
 
 
 class BatchCreateTableResponseData(BaseModel):
-    tables: List[BatchCreateTableResponseData]
+    tables: List[BatchCreateTableResponseDataItem]
 
 
 class BatchCreateTableResponse(BaseResponse):

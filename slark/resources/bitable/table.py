@@ -66,6 +66,7 @@ class AsyncTable(AsyncAPIResource):
         timeout: Union[httpx.Timeout, None] = None,
     ):
         """新增数据表
+        https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/create
 
         Args:
             app_token (str): 多维表格的 app_token
@@ -92,6 +93,18 @@ class AsyncTable(AsyncAPIResource):
         user_id_type: Union[Literal["user_id", "open_id", "union_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
     ):
+        """新增多个数据表。
+        https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/batch_create
+
+        Args:
+            app_token (str): 多维表格的唯一标识符
+            names (List[str]): 数据表名称，注意名称中的首尾空格将会被去除。长度范围：1 字符 ～ 100 字符。
+            user_id_type (Union[Literal[&quot;user_id&quot;, &quot;open_id&quot;, &quot;union_id&quot;], None], optional): 用户 ID 类型. Defaults to None.
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            BatchCreateTableResponse: 创建返回值
+        """
         return await self._post(
             API_PATH.bitables.batch_create_table.format(app_token=app_token),
             body=BatchCreateTableBody(tables=[{"name": name} for name in names]).model_dump(),
@@ -110,6 +123,20 @@ class AsyncTable(AsyncAPIResource):
         name: str,
         timeout: Union[httpx.Timeout, None] = None,
     ):
+        """该接口用于更新数据表的基本信息，包括数据表的名称等。
+
+        Args:
+            app_token (str): 多维表格的 app_token
+            table_id (str): 多维表格的 table_id
+            name (str): 数据表的新名称。请注意：名称中的首尾空格将会被去除。\n
+                如果名称为空或和旧名称相同，接口仍然会返回成功，但是名称不会被更改。\n
+                示例值："数据表的新名称"。\
+                数据校验规则：长度范围：1 字符 ～ 100 字符。正则校验：^[^\[\]\:\\\/\?\*]+$。
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            UpdateTableResponse: 更新返回值
+        """
         return await self._patch(
             API_PATH.bitables.update_table.format(app_token=app_token, table_id=table_id),
             body=UpdateTableBody(name=name).model_dump(),

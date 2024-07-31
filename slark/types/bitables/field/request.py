@@ -37,6 +37,12 @@ class ListFieldParams(BaseModel):
     最大值：100"""
 
 
+class CreateFieldParams(BaseModel):
+    client_token: Union[str, None] = None
+    """格式为标准的 uuidv4，操作的唯一标识，用于幂等的进行更新操作。此值为空表示将发起一次新的请求，此值非空表示幂等的进行更新操作。\
+        示例值："fe599b60-450f-46ff-b2ef-9f6675625b97"。"""
+
+
 class CreateFieldBody(BaseModel):
     field_name: str
     """多维表格字段名

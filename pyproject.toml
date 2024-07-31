@@ -22,6 +22,7 @@ pytest = "^8.3.2"
 anyio = "^4.4.0"
 trio = "^0.26.0"
 python-dotenv = "1.0.0"
+pytest-asyncio = "^0.23.8"
 
 
 
@@ -40,3 +41,6 @@ enable = true
 [build-system]
 requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
 build-backend = "poetry_dynamic_versioning.backend"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
