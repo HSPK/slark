@@ -20,12 +20,12 @@ table_ids = []
 
 
 async def test_get_bitable_meta(client: AsyncLark):
-    response = await client.bitables.get_bitable_meta(app_token)
+    response = await client.bitables.meta.get(app_token)
     assert response.code == 0
 
 
 async def test_write_bitable_meta(client: AsyncLark):
-    response = await client.bitables.update_bitable_meta(app_token, name="update test")
+    response = await client.bitables.meta.update(app_token, name="update test")
     assert response.code == 0
 
 
