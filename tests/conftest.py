@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from pytest import fixture
@@ -7,7 +8,7 @@ from slark import AsyncLark
 _client = None
 
 
-@fixture
+@fixture(scope="session")
 def client():
     global _client
     if _client is None:
@@ -17,3 +18,13 @@ def client():
             webhook=os.getenv("TEST_WEBHOOK_URL"),
         )
     return _client
+
+
+@fixture(scope="session")
+def event_loop():
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+    yield loop
+    loop.close()

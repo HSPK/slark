@@ -6,7 +6,7 @@ from dotenv import find_dotenv, load_dotenv
 
 from slark import AsyncLark
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio(loop_scope="module")
 
 load_dotenv(find_dotenv())
 url = os.getenv("TEST_SHEET_URL")

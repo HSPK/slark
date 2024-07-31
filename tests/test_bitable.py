@@ -8,7 +8,7 @@ from slark import AsyncLark
 from slark.types.bitables import common as bc
 from slark.types.bitables.table.common import TableData, TableField
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio(loop_scope="module")
 
 load_dotenv(find_dotenv())
 app_token = os.getenv("TEST_APP_TOKEN")
@@ -143,3 +143,15 @@ async def test_create_table(client: AsyncLark):
     )
     response = await client.bitables.table.create(app_token, table=table)
     assert response.code == 0
+
+
+async def test_batch_create_table(client: AsyncLark):
+    names = [f"test/{str(uuid.uuid4())}" for _ in range(10)]
+    response = await client.bitables.table.batch_create(app_token, names=names)
+    assert response.code == 0
+
+
+async def test_update_table(client: AsyncLark):
+    name = f"update_test/{str(uuid.uuid4())}"
+    reponse = await client.bitables.table.update(app_token, table_id=table_id, name=name)
+    assert reponse.code == 0
