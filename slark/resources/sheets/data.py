@@ -16,7 +16,7 @@ class AsyncData(AsyncAPIResource):
         range: str,
         values: List[List[data.CellTypes]],
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> data.PrependDataResponse:
         return await self._post(
             path.spreadsheets.data.prepend_data.format(spreadsheetToken=spreadsheet_token),
             body=data.PrependDataBody(
@@ -34,7 +34,7 @@ class AsyncData(AsyncAPIResource):
         range: str,
         values: List[List[data.CellTypes]],
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> data.AppendDataResponse:
         """在电子表格工作表的指定范围中，在空白位置中追加数据。例如，若指定范围参数 range 为 6e5ed3!A1:B2，该接口将会依次寻找 A1、A2、A3...单元格，在找到的第一个空白位置中写入数据。
 
             使用限制
@@ -77,7 +77,7 @@ class AsyncData(AsyncAPIResource):
         range: str,
         values: List[List[data.CellTypes]],
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> data.WriteSingleRangeResponse:
         """向电子表格某个工作表的单个指定范围中写入数据。若指定范围已内有数据，将被新写入的数据覆盖。
 
             使用限制
@@ -116,7 +116,7 @@ class AsyncData(AsyncAPIResource):
         *,
         value_ranges: List[data.WriteDataValueRange],
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> data.WriteMultiRangeResponse:
         return await self._post(
             path.spreadsheets.data.write_multi_range_data.format(
                 spreadsheetToken=spreadsheet_token
@@ -137,7 +137,7 @@ class AsyncData(AsyncAPIResource):
         dateTimeRenderOption: Union[Literal["FormattedString"], None] = None,
         user_id_type: Union[Literal["open_id", "union_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> data.ReadSingleRangeResponse:
         """读取电子表格中单个指定范围的数据。
 
         使用限制
@@ -193,7 +193,7 @@ class AsyncData(AsyncAPIResource):
         dateTimeRenderOption: Union[Literal["FormattedString"], None] = None,
         user_id_type: Union[Literal["open_id", "union_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> data.ReadMultiRangeResponse:
         return await self._get(
             path.spreadsheets.data.read_multi_range_data.format(spreadsheetToken=spreadsheet_token),
             cast_to=data.ReadMultiRangeResponse,

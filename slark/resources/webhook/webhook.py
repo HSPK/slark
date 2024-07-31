@@ -12,7 +12,7 @@ from slark.utils.time import datetime_now
 class AsyncWebhook(AsyncAPIResource):
     async def post_feishu_card(
         self, card: InteractiveCard, timeout: Union[httpx.Timeout, None] = None
-    ):
+    ) -> BaseResponse:
         return await self._post(
             self._client._webhook_url,
             body={

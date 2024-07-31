@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 import pydantic
 
@@ -14,5 +14,5 @@ class BaseModel(pydantic.BaseModel):
         *,
         exclude_none: bool = True,
         **kwargs: Any,
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
         return super().model_dump(exclude_none=exclude_none, **kwargs)

@@ -33,6 +33,8 @@ from slark.types.bitables.record.response import (
 
 
 class AsyncRecord(AsyncAPIResource):
+    MAX_RECORDS_PER_REQUEST = 500
+
     async def create(
         self,
         app_token: str,
@@ -42,7 +44,7 @@ class AsyncRecord(AsyncAPIResource):
         user_id_type: Union[Literal["open_id", "union_id", "user_id"], None] = None,
         client_token: Union[str, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> CreateRecordResponse:
         """该接口用于在数据表中新增一条记录
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/create
 
@@ -83,7 +85,7 @@ class AsyncRecord(AsyncAPIResource):
         fields: Dict[str, FieldValueType],
         user_id_type: Union[Literal["open_id", "union_id", "user_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> UpdateRecordResponse:
         """该接口用于在数据表中更新一条记录
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/update
 
@@ -120,7 +122,7 @@ class AsyncRecord(AsyncAPIResource):
         table_id: str,
         record_id: str,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> DeleteRecordResponse:
         """该接口用于在数据表中删除一条记录
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/delete
 
@@ -155,7 +157,7 @@ class AsyncRecord(AsyncAPIResource):
         page_token: Union[str, None] = None,
         page_size: Union[int, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> SearchRecordResponse:
         """该接口用于查询数据表中的现有记录，单次最多查询 500 行记录，支持分页获取。
         https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/search
 
@@ -205,7 +207,7 @@ class AsyncRecord(AsyncAPIResource):
         with_shared_url: Union[bool, None] = None,
         automatic_fields: Union[bool, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> BatchGetRecordResponse:
         """该接口用于批量获取数据表中的记录
         https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/batch_get
 
@@ -242,7 +244,7 @@ class AsyncRecord(AsyncAPIResource):
         user_id_type: Union[Literal["open_id", "union_id", "user_id"], None] = None,
         client_token: Union[str, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> BatchCreateRecordResponse:
         """该接口用于在数据表中新增多条记录，单次调用最多新增 500 条记录。
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/batch_create
 
@@ -279,7 +281,7 @@ class AsyncRecord(AsyncAPIResource):
         records: List[BatchUpdateRecord],
         user_id_type: Union[Literal["open_id", "union_id", "user_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> UpdateRecordResponse:
         """该接口用于更新数据表中的多条记录，单次调用最多更新 500 条记录。
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/batch_update
 
@@ -312,7 +314,7 @@ class AsyncRecord(AsyncAPIResource):
         table_id: str,
         record_ids: List[str],
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> BatchDeleteRecordResponse:
         """该接口用于删除数据表中现有的多条记录，单次调用中最多删除 500 条记录。
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/batch_delete
 

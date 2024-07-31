@@ -14,7 +14,7 @@ class AsyncMeta(AsyncAPIResource):
         app_token: str,
         *,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> GetBitableMetaResponse:
         """获取多维表格元数据 https://open.feishu.cn/document/server-docs/docs/bitable-v1/app/get
 
         Args:
@@ -36,7 +36,7 @@ class AsyncMeta(AsyncAPIResource):
         *,
         name: Union[str, None] = None,
         is_advanced: Union[bool, None] = None,
-    ):
+    ) -> UpdateBitableMetaResponse:
         """更新多维表格元数据 https://open.feishu.cn/document/server-docs/docs/bitable-v1/app/update
 
         Args:

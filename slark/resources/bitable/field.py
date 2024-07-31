@@ -35,7 +35,7 @@ class AsyncField(AsyncAPIResource):
         page_token: Union[str, None] = None,
         page_size: Union[int, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> ListFieldResponse:
         """根据 app_token 和 table_id，获取数据表的所有字段
 
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-field/list
@@ -80,7 +80,7 @@ class AsyncField(AsyncAPIResource):
         text: Union[FieldDescription, None] = None,
         client_token: Union[str, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> CreateFieldResponse:
         """该接口用于在数据表中新增一个字段
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-field/create
 
@@ -140,7 +140,7 @@ class AsyncField(AsyncAPIResource):
         disable_sync: Union[bool, None] = None,
         text: Union[FieldDescription, None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> UpdateFieldResponse:
         """该接口用于在数据表中更新一个字段
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-field/update
 
@@ -192,7 +192,7 @@ class AsyncField(AsyncAPIResource):
         *,
         table_id: str,
         field_id: str,
-    ):
+    ) -> DeleteFieldResponse:
         """该接口用于在数据表中删除一个字段
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-field/delete
 

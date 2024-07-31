@@ -15,7 +15,7 @@ class AsyncTable(AsyncAPIResource):
         *,
         user_id_type: Literal["open_id", "union_id", "user_id"] = "open_id",
         timeout: Union[httpx.Timeout, None] = None,
-    ) -> dict:
+    ) -> GetSpreadsheetInfoResponse:
         """根据电子表格 token 获取电子表格的基础信息，包括电子表格的所有者、URL 链接等。
         https://open.feishu.cn/document/server-docs/docs/sheets-v3/spreadsheet/get
         Args:
@@ -29,7 +29,7 @@ class AsyncTable(AsyncAPIResource):
                 默认值：open_id。当值为 user_id，字段权限要求：获取用户 user ID.
 
         Returns:
-            dict: _description_
+            GetSpreadsheetInfoResponse: 电子表格的基础信息
         """
         return await self._get(
             API_PATH.spreadsheets.get_spreadsheet_info.format(spreadsheet_token=sheet_token),

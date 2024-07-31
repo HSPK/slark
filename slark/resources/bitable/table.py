@@ -31,7 +31,7 @@ class AsyncTable(AsyncAPIResource):
         timeout: Union[httpx.Timeout, None] = None,
         page_token: Union[str, None] = None,
         page_size: Union[int, None] = None,
-    ):
+    ) -> ListTableResponse:
         """根据 app_token，获取多维表格下的所有数据表
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/list
 
@@ -66,7 +66,7 @@ class AsyncTable(AsyncAPIResource):
         *,
         table: TableData,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> CreateTableResponse:
         """新增数据表
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/create
 
@@ -94,7 +94,7 @@ class AsyncTable(AsyncAPIResource):
         names: List[str],
         user_id_type: Union[Literal["user_id", "open_id", "union_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> BatchCreateTableResponse:
         """新增多个数据表。
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/batch_create
 
@@ -124,7 +124,7 @@ class AsyncTable(AsyncAPIResource):
         table_id: str,
         name: str,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> UpdateTableResponse:
         r"""该接口用于更新数据表的基本信息，包括数据表的名称等。
 
         Args:
@@ -152,7 +152,7 @@ class AsyncTable(AsyncAPIResource):
         *,
         table_id: str,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> BaseResponse:
         """删除数据表
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/delete
 
@@ -176,7 +176,7 @@ class AsyncTable(AsyncAPIResource):
         *,
         table_ids: List[str],
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> BaseResponse:
         """批量删除数据表
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table/batch_delete
 

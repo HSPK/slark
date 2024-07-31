@@ -15,7 +15,7 @@ class AsyncWorksheet(AsyncAPIResource):
         self,
         sheet_token: str,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> GetAllWorksheetsInfoResponse:
         """根据电子表格 token 获取表格中所有工作表及其属性信息，包括工作表 ID、标题、索引位置、是否被隐藏等。
         https://open.feishu.cn/document/server-docs/docs/sheets-v3/spreadsheet-sheet/query
 
@@ -38,7 +38,7 @@ class AsyncWorksheet(AsyncAPIResource):
         *,
         sheet_id: str,
         timeout: Union[httpx.Timeout, None] = None,
-    ):
+    ) -> GetWorksheetInfoResponse:
         return await self._get(
             API_PATH.spreadsheets.get_worksheet_info.format(
                 spreadsheet_token=sheet_token, sheet_id=sheet_id

@@ -37,7 +37,7 @@ class AsyncSpreadsheets(AsyncAPIResource):
     def data(self):
         return AsyncData(client=self._client)
 
-    async def get_sheet_info(self, url: str):
+    async def get_sheet_info(self, url: str) -> SheetInfo:
         if "/sheets/" in url:
             spreadsheet_token, sheet_id = re.findall(
                 r"\/sheets\/([^\/\?]+)(?:\?sheet=([^\/]+))?", url

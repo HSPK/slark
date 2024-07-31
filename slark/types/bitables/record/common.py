@@ -4,6 +4,8 @@ from typing_extensions import Literal
 
 from slark.types._common import BaseModel
 
+"""文档 https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/reference/bitable-v1/app-table-record/bitable-record-data-structure-overview"""
+
 
 class MultiLineText(BaseModel):
     text: str
