@@ -217,6 +217,37 @@ async def test_create_record(client: AsyncLark):
     record_ids.append(response.data.record.record_id)
 
 
+bitable_df = None
+
+
+async def test_read_bitable(client: AsyncLark):
+    global bitable_df
+
+    bitable_df = await client.bitables.read(url)
+
+
+async def test_update_bitable(client: AsyncLark):
+    bitable_df["test text"] = "update text"
+    items = await client.bitables.update(url, data=bitable_df)
+    assert len(items) == bitable_df.shape[0]
+    df = await client.bitables.read(url)
+    assert df["test text"].values[0] == "update text"
+
+
+async def test_append_bitable(client: AsyncLark):
+    items = await client.bitables.append(url, data=bitable_df)
+    assert len(items) == bitable_df.shape[0]
+    df = await client.bitables.read(url)
+    assert df.shape[0] == bitable_df.shape[0] * 2
+
+
+async def test_delete_bitable(client: AsyncLark):
+    items = await client.bitables.delete(url, record_ids=bitable_df.index.tolist())
+    assert len(items) == bitable_df.shape[0]
+    df = await client.bitables.read(url)
+    assert df.shape[0] == bitable_df.shape[0]
+
+
 async def test_batch_create_record(client: AsyncLark):
     global record_ids
 

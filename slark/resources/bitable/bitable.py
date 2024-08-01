@@ -94,7 +94,8 @@ class AsyncBiTable(AsyncAPIResource):
             timezone (Union[str, None], optional): 时区，仅在raw=False时有效. Defaults to "Asia/Shanghai".
 
         Returns:
-            Union[dict, pd.DataFrame]: 当raw=True时返回原始数据，否则返回DataFrame
+            Union[dict, pd.DataFrame]: 当raw=True时返回原始数据，否则返回DataFrame\
+                返回的 dataframe 的 index 为对应记录的 record id
         """
         info = await self.get_bitable_info(url)
 
@@ -140,7 +141,6 @@ class AsyncBiTable(AsyncAPIResource):
         *,
         data: pd.DataFrame,
         timezone: Union[str, None] = "Asia/Shanghai",
-        return_raw: bool = False,
         timeout: Union[httpx.Timeout, None] = None,
     ) -> List[RecordResponseData]:
         """向多维表格中追加数据
@@ -165,15 +165,7 @@ class AsyncBiTable(AsyncAPIResource):
                 timeout=timeout,
             )
             response_records.extend(response.data.records)
-        if return_raw:
-            return response_records
-        else:
-            fields = (
-                await self.field.list(app_token=info.app_token, table_id=info.table_id)
-            ).data.items
-            return fields_records_to_dataframe(
-                fields=fields, records=response_records, timezone=timezone
-            )
+        return response_records
 
     async def update(
         self,
@@ -181,14 +173,13 @@ class AsyncBiTable(AsyncAPIResource):
         *,
         data: pd.DataFrame,
         timezone: Union[str, None] = "Asia/Shanghai",
-        return_raw: bool = False,
         timeout: Union[httpx.Timeout, None] = None,
     ):
         """更新多维表格中的数据
 
         Args:
             url (str): 多维表格分享链接
-            data (pd.DataFrame): 要更新的数据
+            data (pd.DataFrame): 要更新的数据，index 为更新记录的 record id
             timezone (Union[str, None], optional): 时区. Defaults to "Asia/Shanghai".
             timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
 
@@ -206,12 +197,26 @@ class AsyncBiTable(AsyncAPIResource):
                 timeout=timeout,
             )
             response_records.extend(response.data.records)
-        if return_raw:
-            return response_records
-        else:
-            fields = (
-                await self.field.list(app_token=info.app_token, table_id=info.table_id)
-            ).data.items
-            return fields_records_to_dataframe(
-                fields=fields, records=response_records, timezone=timezone
+        return response_records
+
+    async def delete(
+        self, url: str, *, record_ids: List[str], timeout: Union[httpx.Timeout, None] = None
+    ) -> None:
+        """删除多维表格中的数据
+
+        Args:
+            url (str): 多维表格分享链接
+            record_ids (List[str]): 要删除的记录ID
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+        """
+        info = await self.get_bitable_info(url)
+        delete_response = []
+        for i in range(0, len(record_ids), self.record.MAX_RECORDS_PER_REQUEST):
+            response = await self.record.batch_delete(
+                app_token=info.app_token,
+                table_id=info.table_id,
+                record_ids=record_ids[i : i + self.record.MAX_RECORDS_PER_REQUEST],
+                timeout=timeout,
             )
+            delete_response.extend(response.data.records)
+        return delete_response
