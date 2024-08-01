@@ -15,6 +15,7 @@ class AsyncLark(AsyncAPIClient):
     knowledge_space: resources.KnowledgeSpace
     sheets: resources.AsyncSpreadsheets
     bitables: resources.AsyncBiTable
+    docs: resources.AsyncDocuments
 
     _app_id: Union[str, None]
     _app_secret: Union[str, None]
@@ -52,6 +53,7 @@ class AsyncLark(AsyncAPIClient):
         self.knowledge_space = resources.KnowledgeSpace(self)
         self.sheets = resources.AsyncSpreadsheets(self)
         self.bitables = resources.AsyncBiTable(self)
+        self.docs = resources.AsyncDocuments(self)
 
     @property
     def app_credentials(self) -> dict:

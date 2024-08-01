@@ -83,8 +83,24 @@ class BITABLES:
 
 
 @final
+class DOCUMENTS:
+    get_base_info = "/docx/v1/documents/{document_id}"
+    get_raw_content = "/docx/v1/documents/{document_id}/raw_content"
+    get_blocks = "/docx/v1/documents/{document_id}/blocks"
+    create_document = "/docx/v1/documents"
+
+    get_block_content = "/docx/v1/documents/{document_id}/blocks/{block_id}"
+    get_children_blocks = "/docx/v1/documents/{document_id}/blocks/{block_id}/children"
+    create_block = "/docx/v1/documents/{document_id}/blocks/{block_id}/children"
+    update_block = "/docx/v1/documents/{document_id}/blocks/{block_id}"
+    batch_update_block = "/docx/v1/documents/{document_id}/blocks/batch_update"
+    batch_delete_block = "/docx/v1/documents/{document_id}/blocks/{block_id}/children/batch_delete"
+
+
+@final
 class API_PATH:
     knowledge_space = KNOWLEDGE_SPACE
     auth = AUTH
     spreadsheets = SPREADSHEETS
     bitables = BITABLES
+    documents = DOCUMENTS
