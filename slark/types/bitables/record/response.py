@@ -508,3 +508,7 @@ class BatchGetRecordResponse(BaseResponse):
     ```"""
 
     data: BatchGetRecordResponseData
+
+
+class BatchUpdateRecordResponse(BatchCreateRecordResponse):
+    pass

@@ -154,6 +154,7 @@ FieldValueType = Union[
     float,
     bool,
     User,
+    None,
     List[str],
     List[MultiLineText],
     List[User],

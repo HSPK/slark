@@ -25,6 +25,7 @@ from slark.types.bitables.record.response import (
     BatchCreateRecordResponse,
     BatchDeleteRecordResponse,
     BatchGetRecordResponse,
+    BatchUpdateRecordResponse,
     CreateRecordResponse,
     DeleteRecordResponse,
     SearchRecordResponse,
@@ -281,7 +282,7 @@ class AsyncRecord(AsyncAPIResource):
         records: List[BatchUpdateRecord],
         user_id_type: Union[Literal["open_id", "union_id", "user_id"], None] = None,
         timeout: Union[httpx.Timeout, None] = None,
-    ) -> UpdateRecordResponse:
+    ) -> BatchUpdateRecordResponse:
         """该接口用于更新数据表中的多条记录，单次调用最多更新 500 条记录。
         https://open.feishu.cn/document/server-docs/docs/bitable-v1/app-table-record/batch_update
 
@@ -293,18 +294,16 @@ class AsyncRecord(AsyncAPIResource):
             timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
 
         Returns:
-            UpdateRecordResponse: 更新记录的返回结果
+            BatchUpdateRecordResponse: 更新记录的返回结果
         """
-        return await self._patch(
+        return await self._post(
             API_PATH.bitables.batch_update_record.format(app_token=app_token, table_id=table_id),
-            body=BatchUpdateRecordBody(
-                records=records,
-            ).model_dump(),
+            body=BatchUpdateRecordBody(records=records).model_dump(),
             options={
                 "timeout": timeout,
                 "params": UpdateRecordParams(user_id_type=user_id_type).model_dump(),
             },
-            cast_to=UpdateRecordResponse,
+            cast_to=BatchUpdateRecordResponse,
         )
 
     async def batch_delete(

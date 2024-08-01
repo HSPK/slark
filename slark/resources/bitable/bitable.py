@@ -1,6 +1,7 @@
 import re
 from typing import List, Union
 
+import httpx
 import pandas as pd
 from pydantic import BaseModel
 
@@ -12,7 +13,7 @@ from .field import AsyncField
 from .meta import AsyncMeta
 from .record import AsyncRecord
 from .table import AsyncTable
-from .utils import fields_records_to_dataframe
+from .utils import dataframe_to_records, fields_records_to_dataframe
 from .view import AsyncView
 
 
@@ -76,10 +77,12 @@ class AsyncBiTable(AsyncAPIResource):
     async def read(
         self,
         url: str,
+        *,
         rows: Union[int, None] = None,
         field_names: Union[List[str], None] = None,
-        raw: bool = False,
+        return_raw: bool = False,
         timezone: Union[str, None] = "Asia/Shanghai",
+        timeout: Union[httpx.Timeout, None] = None,
     ) -> Union[dict, pd.DataFrame]:
         """从多维表格中读取数据
 
@@ -119,13 +122,96 @@ class AsyncBiTable(AsyncAPIResource):
                 field_names=field_names,
                 page_token=page_token,
                 page_size=page_size,
+                timeout=timeout,
             )
             has_more = response.data.has_more
             page_token = response.data.page_token
             items.extend(response.data.items)
 
         items = items[:rows] if rows else items
-        if raw:
+        if return_raw:
             return {"items": items, "fields": fields}
         else:
             return fields_records_to_dataframe(fields, items, timezone=timezone)
+
+    async def append(
+        self,
+        url: str,
+        *,
+        data: pd.DataFrame,
+        timezone: Union[str, None] = "Asia/Shanghai",
+        return_raw: bool = False,
+        timeout: Union[httpx.Timeout, None] = None,
+    ) -> List[RecordResponseData]:
+        """向多维表格中追加数据
+
+        Args:
+            url (str): 多维表格分享链接
+            data (pd.DataFrame): 要追加的数据
+            timezone (Union[str, None], optional): 时区. Defaults to "Asia/Shanghai".
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            List[RecordResponseData]: 追加的数据
+        """
+        info = await self.get_bitable_info(url)
+        records = dataframe_to_records(data, timezone=timezone)
+        response_records: List[RecordResponseData] = []
+        for i in range(0, len(records), self.record.MAX_RECORDS_PER_REQUEST):
+            response = await self.record.batch_create(
+                app_token=info.app_token,
+                table_id=info.table_id,
+                records=records[i : i + self.record.MAX_RECORDS_PER_REQUEST],
+                timeout=timeout,
+            )
+            response_records.extend(response.data.records)
+        if return_raw:
+            return response_records
+        else:
+            fields = (
+                await self.field.list(app_token=info.app_token, table_id=info.table_id)
+            ).data.items
+            return fields_records_to_dataframe(
+                fields=fields, records=response_records, timezone=timezone
+            )
+
+    async def update(
+        self,
+        url: str,
+        *,
+        data: pd.DataFrame,
+        timezone: Union[str, None] = "Asia/Shanghai",
+        return_raw: bool = False,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        """更新多维表格中的数据
+
+        Args:
+            url (str): 多维表格分享链接
+            data (pd.DataFrame): 要更新的数据
+            timezone (Union[str, None], optional): 时区. Defaults to "Asia/Shanghai".
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            List[RecordResponseData]: 更新的数据
+        """
+        info = await self.get_bitable_info(url)
+        records = dataframe_to_records(data, timezone=timezone, use_index_as_record_id=True)
+        response_records: List[RecordResponseData] = []
+        for i in range(0, len(records), self.record.MAX_RECORDS_PER_REQUEST):
+            response = await self.record.batch_update(
+                app_token=info.app_token,
+                table_id=info.table_id,
+                records=records[i : i + self.record.MAX_RECORDS_PER_REQUEST],
+                timeout=timeout,
+            )
+            response_records.extend(response.data.records)
+        if return_raw:
+            return response_records
+        else:
+            fields = (
+                await self.field.list(app_token=info.app_token, table_id=info.table_id)
+            ).data.items
+            return fields_records_to_dataframe(
+                fields=fields, records=response_records, timezone=timezone
+            )
