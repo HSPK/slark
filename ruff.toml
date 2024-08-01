@@ -26,6 +26,7 @@ exclude = [
     "site-packages",
     "venv",
 ]
+extend-include = ["*.ipynb"]
 
 line-length = 100
 indent-width = 4
