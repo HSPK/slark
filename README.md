@@ -39,7 +39,7 @@ await lark.sheets.read(
     user_id_type: Union[Literal["open_id", "union_id"], None] = None,
     return_raw: bool = False,
     timeout: Union[httpx.Timeout, None] = None,
-) -> Union[pd.DataFrame, List[List[CellTypes]]]:
+)
     """从电子表格读取数据，该接口返回数据的最大限制为 10 MB。该接口不支持获取跨表引用和数组公式的计算结果。
 
     Args:
@@ -89,7 +89,22 @@ await lark.sheets.prepend(url, data=df, start_row=0, start_col=2)
 Send webhook message
 
 ```python
-await lark.webhook.xxxx
+await lark.webhook.post_error_card(
+    self,
+    msg: str,
+    traceback: str,
+    title,
+    subtitle: Union[str, None] = None,
+    timeout: Union[httpx.Timeout, None] = None,
+)
+
+await lark.webhook.post_success_card(
+    self,
+    msg: str,
+    title,
+    subtitle: Union[str, None] = None,
+    timeout: Union[httpx.Timeout, None] = None,
+)
 ```
 
 ## Bitables
@@ -105,7 +120,7 @@ await lark.bitables.read(
     return_raw: bool = False,
     timezone: Union[str, None] = "Asia/Shanghai",
     timeout: Union[httpx.Timeout, None] = None,
-) -> Union[dict, pd.DataFrame]:
+)
     """从多维表格中读取数据
 
     Args:
@@ -130,7 +145,7 @@ await lark.bitables.append(
     data: pd.DataFrame,
     timezone: Union[str, None] = "Asia/Shanghai",
     timeout: Union[httpx.Timeout, None] = None,
-) -> List[RecordResponseData]:
+)
     """向多维表格中追加数据
 
     Args:
@@ -153,7 +168,7 @@ await lark.bitables.update(
     data: pd.DataFrame,
     timezone: Union[str, None] = "Asia/Shanghai",
     timeout: Union[httpx.Timeout, None] = None,
-):
+)
     """更新多维表格中的数据
 
     Args:
@@ -172,7 +187,7 @@ await lark.bitables.update(
 ```python
 async def delete(
     url: str, *, record_ids: List[str], timeout: Union[httpx.Timeout, None] = None
-) -> None:
+)
     """删除多维表格中的数据
 
     Args:
