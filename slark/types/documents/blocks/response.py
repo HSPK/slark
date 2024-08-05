@@ -12,5 +12,6 @@ class GetAllBlocksResponseData(BaseModel):
     page_token: Union[str, None] = None
     has_more: bool
 
+
 class GetAllBlocksResponse(BaseResponse):
     data: GetAllBlocksResponseData

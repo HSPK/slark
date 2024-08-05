@@ -2,17 +2,18 @@ import re
 from typing import List, Union
 
 import httpx
-import pandas as pd
 from pydantic import BaseModel
 from typing_extensions import Literal
 
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH
 from slark.types._utils import cached_property
+from slark.types.documents.blocks.common import BlockInfo
 from slark.types.documents.request import GetRawContentParams
 from slark.types.documents.response import GetRawContentResponse
 
 from .blocks import AsyncBlocks
+from .helper import PageHelper
 
 
 class DocumentInfo(BaseModel):
@@ -79,7 +80,7 @@ class AsyncDocuments(AsyncAPIResource):
 
         return DocumentInfo(document_id=document_id)
 
-    async def read(
+    async def read_raw(
         self,
         url: str,
         *,
@@ -102,3 +103,41 @@ class AsyncDocuments(AsyncAPIResource):
         """
         document_id = (await self.get_document_info(url)).document_id
         return (await self.get_raw_content(document_id, lang=lang, timeout=timeout)).data.content
+
+    async def _read_all_blocks(
+        self,
+        url: str,
+        *,
+        document_revision_id: Union[int, None] = None,
+        user_id_type: Union[str, None] = None,
+        timeout: Union[httpx.Timeout, None] = None,
+    ) -> List[BlockInfo]:
+        document_id = (await self.get_document_info(url)).document_id
+        page_token = None
+        has_more = True
+        blocks: List[BlockInfo] = []
+        while has_more:
+            response = await self.blocks.get_all(
+                document_id,
+                page_token=page_token,
+                document_revision_id=document_revision_id,
+                user_id_type=user_id_type,
+                timeout=timeout,
+            )
+            blocks.extend(response.data.items)
+            has_more = response.data.has_more
+            page_token = response.data.page_token
+        return blocks
+
+    async def read_markdown(self, url: str, *, timeout: Union[httpx.Timeout, None] = None) -> str:
+        """从文档中读取 markdown 内容
+
+        Args:
+            url (str): 文档分享链接
+            timeout (Union[httpx.Timeout, None], optional): 超时时间. Defaults to None.
+
+        Returns:
+            str: markdown 内容
+        """
+        blocks = await self._read_all_blocks(url, timeout=timeout)
+        return PageHelper(blocks).to_markdown()

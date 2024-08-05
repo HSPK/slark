@@ -1,7 +1,8 @@
 import enum
 from typing import List, Union
 
-from pydantic import BaseModel
+import pydantic
+from typing_extensions import Literal
 
 
 class BlockType(enum.Enum):
@@ -446,28 +447,6 @@ class TextBackgroundColor(enum.Enum):
     DARK_PURPLE = "DarkPurpleBackground"
 
 
-class TextIndentationLevel(enum.Enum):
-    NO_INDENT = "NoIndent"
-    ONE_LEVEL_INDENT = "OneLevelIndent"
-
-
-class TextStyle(BaseModel):
-    align: Union[TextStyleAlign, None] = None
-    """对齐方式"""
-    done: Union[bool, None] = None
-    """todo 的完成状态。支持对 Todo 块进行修改"""
-    folded: Union[bool, None] = None
-    """文本的折叠状态。支持对 Heading1~9、和有子块的 Text、Ordered、Bullet 和 Todo 块进行修改"""
-    language: Union[CodeBlockLanguage, None] = None
-    """代码块的语言类型。仅支持对 Code 块进行修改"""
-    wrap: Union[bool, None] = None
-    """代码块是否自动换行。支持对 Code 块进行修改"""
-    background_color: Union[TextBackgroundColor, None] = None
-    """块的背景色"""
-    indentation_level: Union[TextIndentationLevel, None] = None
-    """首行缩进级别"""
-
-
 class TextElementBackgroundColor(enum.Enum):
     """背景色
 
@@ -578,6 +557,96 @@ class BorderColor(enum.Enum):
     GRAY = 7
 
 
+class TextIndentationLevel(enum.Enum):
+    NO_INDENT = "NoIndent"
+    ONE_LEVEL_INDENT = "OneLevelIndent"
+
+
+class BaseModel(pydantic.BaseModel):
+    model_config = pydantic.ConfigDict()
+
+
+class TextStyle(BaseModel):
+    align: Union[TextStyleAlign, None] = None
+    """对齐方式"""
+    done: Union[bool, None] = None
+    """todo 的完成状态。支持对 Todo 块进行修改"""
+    folded: Union[bool, None] = None
+    """文本的折叠状态。支持对 Heading1~9、和有子块的 Text、Ordered、Bullet 和 Todo 块进行修改"""
+    language: Union[CodeBlockLanguage, None] = None
+    """代码块的语言类型。仅支持对 Code 块进行修改"""
+    wrap: Union[bool, None] = None
+    """代码块是否自动换行。支持对 Code 块进行修改"""
+    background_color: Union[TextBackgroundColor, None] = None
+    """块的背景色"""
+    indentation_level: Union[TextIndentationLevel, None] = None
+    """首行缩进级别"""
+
+
+class DocType(enum.Enum):
+    """云文档类型
+
+    可选值有：
+
+    1：Doc
+
+    3：Sheet
+
+    8：Bitable
+
+    11：MindNote
+
+    12：File
+
+    15：Slide
+
+    16：Wiki
+
+    22：Docx"""
+
+    DOC = 1
+    SHEET = 3
+    BITABLE = 8
+    MINDNOTE = 11
+    FILE = 12
+    SLIDE = 15
+    WIKI = 16
+    DOCX = 22
+
+
+class DiagramType(enum.Enum):
+    FLOWCHART = 1
+    UML = 2
+
+
+class ViewType(enum.Enum):
+    CARD = 1
+    PREVIEW = 2
+
+
+class IframeType(enum.Enum):
+    """
+    iframe 类型
+
+    可选值有：
+
+    1：哔哩哔哩
+
+    2：西瓜视频
+
+    3：优酷
+
+    4：Airtable
+
+    5：百度地图"""
+
+    BILIBILI = 1
+    XIGUA_VIDEO = 2
+    YOUKU = 3
+    AIRTABLE = 4
+    BAIDU_MAP = 5
+
+
 class TextElementLink(BaseModel):
     url: str
 
@@ -615,37 +684,6 @@ class MentionUser(BaseModel):
     """用户 OpenID"""
     text_element_style: Union[TextElementStyle, None] = None
     """文本样式"""
-
-
-class DocType(enum.Enum):
-    """云文档类型
-
-    可选值有：
-
-    1：Doc
-
-    3：Sheet
-
-    8：Bitable
-
-    11：MindNote
-
-    12：File
-
-    15：Slide
-
-    16：Wiki
-
-    22：Docx"""
-
-    DOC = 1
-    SHEET = 3
-    BITABLE = 8
-    MINDNOTE = 11
-    FILE = 12
-    SLIDE = 15
-    WIKI = 16
-    DOCX = 22
 
 
 class MentionDoc(BaseModel):
@@ -718,7 +756,7 @@ class TextElement(BaseModel):
 class Text(BaseModel):
     style: Union[TextStyle, None] = None
     """文本样式"""
-    elements: List[TextElement]
+    elements: Union[List[TextElement], None] = None
     """文本元素"""
 
 
@@ -740,22 +778,12 @@ class ChatCard(BaseModel):
     align: Union[TextStyleAlign, None] = None
 
 
-class DiagramType(enum.Enum):
-    FLOWCHART = 1
-    UML = 2
-
-
 class Diagram(BaseModel):
     diagram_type: DiagramType
 
 
 class Divider(BaseModel):
     pass
-
-
-class ViewType(enum.Enum):
-    CARD = 1
-    PREVIEW = 2
 
 
 class File(BaseModel):
@@ -772,29 +800,6 @@ class GridColumn(BaseModel):
     width_ratio: int
 
 
-class IframeType(enum.Enum):
-    """
-    iframe 类型
-
-    可选值有：
-
-    1：哔哩哔哩
-
-    2：西瓜视频
-
-    3：优酷
-
-    4：Airtable
-
-    5：百度地图"""
-
-    BILIBILI = 1
-    XIGUA_VIDEO = 2
-    YOUKU = 3
-    AIRTABLE = 4
-    BAIDU_MAP = 5
-
-
 class IframeComponent(BaseModel):
     iframe_type: IframeType
     url: str
@@ -804,12 +809,242 @@ class Iframe(BaseModel):
     component: IframeComponent
 
 
+class Image(BaseModel):
+    width: int
+    """图片宽度px"""
+    height: int
+    """图片高度px"""
+    token: str
+    """图片 Token"""
+    align: Union[TextStyleAlign, None] = None
+
+
+class ISVWidget(BaseModel):
+    component_id: str
+    """团队互动应用唯一ID"""
+    component_type_id: str
+    """团队互动应用类型，比如信息收集"blk_5f992038c64240015d280958" """
+
+
+class AddOns(BaseModel):
+    component_id: str
+    """文档小组件 ID"""
+    component_type_id: str
+    """文档小组件类型，比如问答互动"blk_636a0a6657db8001c8df5488" """
+    record: str
+    """文档小组件内容数据，JSON 字符串"""
+
+
+class MindNode(BaseModel):
+    token: str
+    """思维导图 Token"""
+
+
+class Sheet(BaseModel):
+    token: str
+    """电子表格 Token"""
+
+
+class TableMergeInfo(BaseModel):
+    row_span: int
+    """从当前行索引起被合并的连续行数"""
+    col_span: int
+    """从当前列索引起被合并的连续列数"""
+
+
+class TableProperty(BaseModel):
+    row_size: int
+    """行数"""
+    column_size: int
+    """列数"""
+    column_width: Union[List[int], None] = None
+    """列宽，单位px"""
+    merge_info: Union[List[TableMergeInfo]] = None
+    """单元格合并信息。创建 Table 时，此属性只读，将由系统自动生成。如果需要合并单元格，可以通过更新块接口的子请求 merge_table_cells 实现"""
+    header_row: Union[bool, None] = None
+    """设置首行为标题行"""
+    header_column: Union[bool, None] = None
+    """设置首列为标题列"""
+
+
+class Table(BaseModel):
+    cells: List[str]
+    """单元格数组，数组元素为 Table Cell Block 的 ID"""
+    property: TableProperty
+    """表格属性"""
+
+
+class TableCell(BaseModel):
+    pass
+
+
+class Undefined(BaseModel):
+    pass
+
+
+class QuoteContainer(BaseModel):
+    pass
+
+
+class Task(BaseModel):
+    task_id: str
+    """任务 ID，查询具体任务详情见 https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/task-v2/task/get"""
+    folded: bool
+
+
+class OKRPeriodStatus(enum.Enum):
+    DEFAULT = "default"
+    NORMAL = "normal"
+    INVALID = "invalid"
+    HIDDEN = "hidden"
+
+
+class OKRVisibleSetting(BaseModel):
+    progress_fill_area_visible: bool
+    """进展编辑区域是否可见"""
+    progress_status_visible: bool
+    """进展状态是否可见"""
+    score_visible: bool
+    """分数是否可见"""
+
+
+class OKR(BaseModel):
+    okr_id: str
+    """OKR ID，获取需要插入的 OKR ID 可见"""
+    period_display_status: OKRPeriodStatus
+    period_name_zh: str
+    """周期名 - 中文"""
+    period_name_en: str
+    """周期名 - 英文"""
+    user_id: str
+    """OKR 所属的用户 ID"""
+    visible_setting: OKRVisibleSetting
+    """OKR 可见性设置"""
+
+
+class OKRProgressRate(BaseModel):
+    mode: Literal["simple", "advanced"]
+    current: Union[float, None] = None
+    percent: Union[float, None] = None
+    progress_status: Literal[
+        "unset",
+        "normal",
+        "risk",
+        "extended",
+    ]
+    start: Union[float, None] = None
+    status_type: Literal["default", "custom"]
+    target: Union[float, None] = None
+
+
+class OKRObjective(BaseModel):
+    objective_id: str
+    """Objective ID"""
+    confidential: bool
+    """是否在 OKR 平台设置了私密权限"""
+    position: int
+    """是否在 OKR 平台设置了私密权限"""
+    score: int
+    """打分信息"""
+    visible: bool
+    """OKR Block 中是否展示该 Objective"""
+    weight: float
+    """Objective 的权重"""
+    progress_rate: OKRProgressRate
+    """进展信息"""
+    content: Text
+    """Objective 的文本内容"""
+
+
+class OKRKeyResult(BaseModel):
+    kr_id: str
+    """Key Result 的 ID"""
+    confidential: bool
+    """是否在 OKR 平台设置了私密权限"""
+    position: int
+    """Key Result 的位置编号，对应 Block 中 KR1、KR2 的 1、2。"""
+    score: int
+    """打分信息"""
+    visible: bool
+    """OKR Block 中是否展示该 Key Result"""
+    weight: float
+    """Key Result 的权重"""
+    progress_rate: OKRProgressRate
+    """进展信息"""
+    content: Text
+    """Key Result 的文本内容"""
+
+
+class OKRProgress(BaseModel):
+    pass
+
+
+class JiraIssue(BaseModel):
+    id: str
+    """Jira 问题 ID"""
+    key: str
+    """Jira 问题 key"""
+
+
+class WikiCatalog(BaseModel):
+    wiki_token: str
+    """知识库 token"""
+
+
+class Board(BaseModel):
+    token: str
+    """画板 Token"""
+    align: Union[TextStyleAlign, None] = None
+    width: Union[int, None] = None
+    """宽度，单位 px；不填时自动适应文档宽度；值超出文档最大宽度时，页面渲染为文档最大宽度"""
+    height: Union[int, None] = None
+    """高度，单位 px；不填时自动适应内容高度；值超出文档最大高度时，页面渲染为文档最大高度"""
+
+
+class Agenda(BaseModel):
+    pass
+
+
+class AgendaItem(BaseModel):
+    pass
+
+
+class AgendaItemTitleElement(BaseModel):
+    text_run: Union[TextRun, None] = None
+    mention_user: Union[MentionUser, None] = None
+    mention_doc: Union[MentionDoc, None] = None
+    reminder: Union[Reminder, None] = None
+    file: Union[InlineFile, None] = None
+    undefined: Union[Undefined, None] = None
+    inline_block: Union[InlineBlock, None] = None
+    equation: Union[Equation, None] = None
+
+
+class AgendaItemContent(BaseModel):
+    pass
+
+
+class AgendaItemTitle(BaseModel):
+    elements: List[AgendaItemTitleElement]
+    align: Union[TextStyleAlign, None] = None
+    agenda_item_content: AgendaItemContent
+
+
+class LinkPreview(BaseModel):
+    url_type: Literal["MessageLink", "Undefined"]
+
+
 class BlockInfo(BaseModel):
     block_id: str
-    parent_id: str
-    children: List[str]
+    """子块的唯一标识"""
     block_type: BlockType
+    """Block 类型"""
+    parent_id: Union[str, None] = None
+    """子块的父块 ID"""
+    children: Union[List[str], None] = None
+    """子块的子块 ID 列表"""
     page: Union[Text, None] = None
+    """文档的根 Block，也称页面 Block"""
     text: Union[Text, None] = None
     heading1: Union[Text, None] = None
     heading2: Union[Text, None] = None
@@ -827,3 +1062,34 @@ class BlockInfo(BaseModel):
     equation: Union[Equation, None] = None
     todo: Union[Text, None] = None
     bitable: Union[Bitable, None] = None
+    callout: Union[Callout, None] = None
+    chat_card: Union[ChatCard, None] = None
+    diagram: Union[Diagram, None] = None
+    divider: Union[Divider, None] = None
+    file: Union[File, None] = None
+    grid: Union[Grid, None] = None
+    grid_column: Union[GridColumn, None] = None
+    iframe: Union[Iframe, None] = None
+    image: Union[Image, None] = None
+    isv: Union[ISVWidget, None] = None
+    add_ons: Union[AddOns, None] = None
+    mindnote: Union[MindNode, None] = None
+    sheet: Union[Sheet, None] = None
+    table: Union[Table, None] = None
+    table_cell: Union[TableCell, None] = None
+    view: Union[ViewType, None] = None
+    undefined: Union[Undefined, None] = None
+    quote_container: Union[QuoteContainer, None] = None
+    task: Union[Task, None] = None
+    okr: Union[OKR, None] = None
+    okr_objective: Union[OKRObjective, None] = None
+    okr_key_result: Union[OKRKeyResult, None] = None
+    okr_progress: Union[OKRProgress, None] = None
+    comment_ids: Union[List[str], None] = None
+    jira_issue: Union[JiraIssue, None] = None
+    wiki_catalog: Union[WikiCatalog, None] = None
+    board: Union[Board, None] = None
+    agenda: Union[Agenda, None] = None
+    agenda_item: Union[AgendaItem, None] = None
+    agenda_item_title: Union[AgendaItemTitle, None] = None
+    link_preview: Union[LinkPreview, None] = None
