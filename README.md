@@ -185,7 +185,7 @@ await lark.bitables.update(
 4. Delete
 
 ```python
-async def delete(
+await lark.delete(
     url: str, *, record_ids: List[str], timeout: Union[httpx.Timeout, None] = None
 )
     """删除多维表格中的数据
@@ -196,3 +196,58 @@ async def delete(
         timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
     """
 ```
+
+## Document
+
+1. Read to Markdown
+
+```python
+await lark.read_markdown(
+    url: str,
+    *,
+    assets_path: str = "./assets/",
+    timeout: Union[httpx.Timeout, None] = None,
+)
+    """从文档中读取 markdown 内容
+
+    Args:
+        url (str): 文档分享链接。
+        assets_path (str, optional): 保存图片的目录. Defaults to "./assets/".
+        timeout (Union[httpx.Timeout, None], optional): 超时时间. Defaults to None.
+
+    Returns:
+        str: markdown 内容
+    """
+```
+
+### 目前支持的文档元素：
+
+1. 文本，格式包括超链接、粗体、斜体、下划线、删除线，不支持字体颜色、背景颜色
+2. 标题，支持 1-9 级标题
+3. 有序列表
+4. 无序列表
+5. 代码块
+6. 引用
+7. 公式
+8. 待办事项，支持勾选和未勾选状态，不支持用户
+9. 高亮块
+10. 分割线
+11. 图片
+12. 表格
+13. 画板（导出为图片）
+
+暂不支持的元素：
+1. 指定@用户
+2. 评论
+3. 文件
+4. 多维表格
+5. 群聊卡片
+6. 链接卡片（官方不支持）
+7. 分栏布局
+8. iframe
+9. 三方应用
+10. 任务
+11. OKR
+12. Jira问题
+13. 议程
+
