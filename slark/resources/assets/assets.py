@@ -34,6 +34,7 @@ class AsyncAssets(AsyncAPIResource):
         )
         mime_type = response.headers["Content-Type"]
         filename = re.findall(r'filename="(.+)"', response.headers["Content-Disposition"])[0]
+        filename = f"{file_token}_{filename}"
         path = anyio.Path(save_dir) / filename
         await path.parent.mkdir(parents=True, exist_ok=True)
         f = await anyio.open_file(path, "wb")
