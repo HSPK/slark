@@ -13,6 +13,7 @@ class RequestOptions(TypedDict):
     params: dict
     max_retries: int
     no_auth: bool
+    raw_response: bool
 
 
 class FinalRequestOptions(BaseModel):
@@ -24,6 +25,7 @@ class FinalRequestOptions(BaseModel):
     timeout: Union[httpx.Timeout, None] = None
     json_data: Union[Dict] = None
     no_auth: bool = False
+    raw_response: bool = False
 
     def get_max_retries(self, max_retries: int) -> int:
         return self.max_retries if self.max_retries is not None else max_retries

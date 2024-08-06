@@ -98,9 +98,21 @@ class DOCUMENTS:
 
 
 @final
+class BOARD:
+    download_as_image = "/board/v1/whiteboards/{whiteboard_id}/download_as_image"
+
+
+@final
+class ASSETS:
+    download = "/drive/v1/medias/{file_token}/download"
+
+
+@final
 class API_PATH:
     knowledge_space = KNOWLEDGE_SPACE
     auth = AUTH
     spreadsheets = SPREADSHEETS
     bitables = BITABLES
     documents = DOCUMENTS
+    board = BOARD
+    assets = ASSETS

@@ -129,15 +129,22 @@ class AsyncDocuments(AsyncAPIResource):
             page_token = response.data.page_token
         return blocks
 
-    async def read_markdown(self, url: str, *, timeout: Union[httpx.Timeout, None] = None) -> str:
+    async def read_markdown(
+        self,
+        url: str,
+        *,
+        assets_path: str = "./assets/",
+        timeout: Union[httpx.Timeout, None] = None,
+    ) -> str:
         """从文档中读取 markdown 内容
 
         Args:
-            url (str): 文档分享链接
+            url (str): 文档分享链接。
+            assets_path (str, optional): 保存图片的目录. Defaults to "./assets/".
             timeout (Union[httpx.Timeout, None], optional): 超时时间. Defaults to None.
 
         Returns:
             str: markdown 内容
         """
         blocks = await self._read_all_blocks(url, timeout=timeout)
-        return PageHelper(blocks).to_markdown()
+        return await PageHelper(blocks, client=self._client).to_markdown(assets_path=assets_path)

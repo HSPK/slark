@@ -16,6 +16,8 @@ class AsyncLark(AsyncAPIClient):
     sheets: resources.AsyncSpreadsheets
     bitables: resources.AsyncBiTable
     docs: resources.AsyncDocuments
+    board: resources.AsyncBoard
+    assets: resources.AsyncAssets
 
     _app_id: Union[str, None]
     _app_secret: Union[str, None]
@@ -54,6 +56,8 @@ class AsyncLark(AsyncAPIClient):
         self.sheets = resources.AsyncSpreadsheets(self)
         self.bitables = resources.AsyncBiTable(self)
         self.docs = resources.AsyncDocuments(self)
+        self.board = resources.AsyncBoard(self)
+        self.assets = resources.AsyncAssets(self)
 
     @property
     def app_credentials(self) -> dict:

@@ -150,6 +150,8 @@ class AsyncAPIClient:
             if retries > 0 and self._should_retry(response):
                 return await self._retry_request(cast_to, options, retries)
             raise self._make_status_error_from_response(e.response) from e
+        if options.raw_response:
+            return cast(ResponseT, response)
         if response.json()["code"] != 0:
             raise self._make_status_error_from_response(response)
         try:
