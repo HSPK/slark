@@ -185,7 +185,7 @@ await lark.bitables.update(
 4. Delete
 
 ```python
-await lark.delete(
+await lark.bitables.delete(
     url: str, *, record_ids: List[str], timeout: Union[httpx.Timeout, None] = None
 )
     """删除多维表格中的数据
@@ -202,7 +202,7 @@ await lark.delete(
 1. Read to Markdown
 
 ```python
-await lark.read_markdown(
+await lark.docs.read_markdown(
     url: str,
     *,
     assets_path: str = "./assets/",
