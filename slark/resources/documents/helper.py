@@ -15,6 +15,11 @@ class Block(BaseModel):
     data: t_block.BlockInfo
 
 
+class BuildOptions(BaseModel):
+    assets_path: str = "./assets/"
+    level: int = 0
+
+
 class PageHelper:
     _client: "AsyncLark"
     block_datas: Dict[str, t_block.BlockInfo]
@@ -64,9 +69,9 @@ class PageHelper:
         Returns:
             str: Markdown 字符串
         """
-        return await self._block_to_markdown(self.page, assets_path)
+        return await self._block_to_markdown(self.page, BuildOptions(assets_path=assets_path))
 
-    def _text_run_to_markdown(self, text_run: t_block.TextRun):
+    async def _text_run_to_markdown(self, text_run: t_block.TextRun):
         md = text_run.content
         if not text_run.text_element_style:
             return md
@@ -88,26 +93,26 @@ class PageHelper:
         """忽略 background_color 和 foreground_color"""
         return md
 
-    def _equation_to_markdown(self, equation: t_block.Equation):
+    async def _equation_to_markdown(self, equation: t_block.Equation):
         return f"$$ {equation.content.strip()} $$"
 
-    def _mention_doc_to_markdown(self, mention_doc: t_block.MentionDoc):
+    async def _mention_doc_to_markdown(self, mention_doc: t_block.MentionDoc):
         return f"[{mention_doc.title}]({mention_doc.url})"
 
-    def _text_element_to_markdown(
+    async def _text_element_to_markdown(
         self, styles: Union[t_block.TextStyle, None], element: t_block.TextElement
     ):
         if element.text_run:
-            return self._text_run_to_markdown(element.text_run)
+            return await self._text_run_to_markdown(element.text_run)
         if element.equation:
-            return self._equation_to_markdown(element.equation)
+            return await self._equation_to_markdown(element.equation)
         if element.mention_doc:
-            return self._mention_doc_to_markdown(element.mention_doc)
+            return await self._mention_doc_to_markdown(element.mention_doc)
         return ""
 
-    def _text_to_markdown(self, text: t_block.Text, type: t_block.BlockType):
+    async def _text_to_markdown(self, text: t_block.Text, type: t_block.BlockType):
         md = "".join(
-            [self._text_element_to_markdown(text.style, element) for element in text.elements]
+            [await self._text_element_to_markdown(text.style, element) for element in text.elements]
         )
         """Ingore the children of text block, maybe will be a bug"""
         if not text.style:
@@ -121,26 +126,39 @@ class PageHelper:
         elif type == t_block.BlockType.TODO:
             done = "x" if text.style.done else " "
             md = f"- [{done}] {md}"
-        elif type == t_block.BlockType.UNORDERED_LIST:
-            md = f"- {md}"
-        elif type == t_block.BlockType.ORDERED_LIST:
-            md = f"1. {md}"
         elif type.name.startswith("TITLE"):
             md = f"{'#' * int(type.name[-1])} {md}"
         elif type == t_block.BlockType.PAGE:
             md = f"# {md}\n"
         return md
 
-    async def _callout_to_markdown(self, callout: Block):
-        md = []
-        for block in callout.children:
-            md.append(f"> {await self._block_to_markdown(block)}")
+    async def _list_to_markdown(
+        self, block: Block, options: BuildOptions, block_type: t_block.BlockType
+    ):
+        ordered = block_type == t_block.BlockType.ORDERED_LIST
+        heading = "1. " if ordered else "- "
+        data = block.data.ordered if ordered else block.data.bullet
+        assert data is not None, "list 数据不能为空"
+        md = await self._text_to_markdown(data, block_type)
+
+        md = "    " * options.level + heading + md
+        md = [md]
+        for child in block.children:
+            options.level += 1
+            md.append(await self._block_to_markdown(child, options))
+            options.level -= 1
         return "\n".join(md)
 
-    def _divider_to_markdown(self, divider: Block):
+    async def _callout_to_markdown(self, callout: Block, options: BuildOptions):
+        md = []
+        for block in callout.children:
+            md.append(f"> {await self._block_to_markdown(block, options=options)}")
+        return "\n".join(md)
+
+    async def _divider_to_markdown(self, divider: Block):
         return "---"
 
-    async def _table_to_markdown(self, table: Block):
+    async def _table_to_markdown(self, table: Block, options: BuildOptions):
         assert table.data.table is not None, "table 数据不能为空"
         assert len(table.data.table.cells) == len(table.children), "table 数据长度不匹配"
 
@@ -151,7 +169,7 @@ class PageHelper:
         md = []
         for cell in table.children:
             assert cell.data.table_cell is not None, "table_cell 数据不能为空"
-            md.append(await self._table_cell_to_markdown(cell))
+            md.append(await self._table_cell_to_markdown(cell, options=options))
         rows = property.row_size
         cols = property.column_size
         header_row = property.header_row
@@ -164,83 +182,83 @@ class PageHelper:
         table_md.insert(1, _list_to_row([":---" for _ in range(cols)]))
         return "\n".join(table_md)
 
-    async def _table_cell_to_markdown(self, table_cell: Block):
+    async def _table_cell_to_markdown(self, table_cell: Block, options: BuildOptions):
         md = []
         for block in table_cell.children:
-            md.append(await self._block_to_markdown(block))
+            md.append(await self._block_to_markdown(block, options=options))
         return "\n".join(md)
 
-    async def _quote_container_to_markdown(self, quote_container: Block):
+    async def _quote_container_to_markdown(self, quote_container: Block, options: BuildOptions):
         md = []
         for block in quote_container.children:
-            md.append(f"> {await self._block_to_markdown(block)}")
+            md.append(f"> {await self._block_to_markdown(block, options=options)}")
         return "\n".join(md)
 
-    async def _board_to_markdown(self, board: t_block.Board, assets_path: Union[str, None] = None):
-        logger.debug(f"Downloading board {board.token} as image to {assets_path}")
-        if assets_path is None:
+    async def _board_to_markdown(self, board: t_block.Board, options: BuildOptions):
+        if options.assets_path is None:
             return ""
-        path = await self._client.board.download_as_image(board.token, save_dir=assets_path)
+        logger.debug(f"Downloading board {board.token} as image to {options.assets_path}")
+        path = await self._client.board.download_as_image(board.token, save_dir=options.assets_path)
         return f"![board]({path})"
 
-    async def _image_to_markdown(self, image: t_block.Image, assets_path: Union[str, None] = None):
-        logger.debug(f"Downloading image {image.token} to {assets_path}")
-        if assets_path is None:
+    async def _image_to_markdown(self, image: t_block.Image, options: BuildOptions):
+        if options.assets_path is None:
             return ""
-        info = await self._client.assets.download(image.token, save_dir=assets_path)
+        logger.debug(f"Downloading image {image.token} to {options.assets_path}")
+        info = await self._client.assets.download(image.token, save_dir=options.assets_path)
         return f"![{info.filename}]({info.filepath})"
 
-    async def _block_to_markdown(self, block: Block, assets_path: Union[str, None] = None):
+    async def _block_to_markdown(self, block: Block, options: BuildOptions):
         block_type = block.data.block_type
         if block.data.page:
-            md = self._text_to_markdown(block.data.page, block_type)
+            md = await self._text_to_markdown(block.data.page, block_type)
             md = [
                 md,
-                *[await self._block_to_markdown(child, assets_path) for child in block.children],
+                *[await self._block_to_markdown(child, options) for child in block.children],
             ]
             return "\n".join(md)
         elif block.data.text:
-            return self._text_to_markdown(block.data.text, block_type)
+            return await self._text_to_markdown(block.data.text, block_type)
         elif block.data.heading1:
-            return self._text_to_markdown(block.data.heading1, block_type)
+            return await self._text_to_markdown(block.data.heading1, block_type)
         elif block.data.heading2:
-            return self._text_to_markdown(block.data.heading2, block_type)
+            return await self._text_to_markdown(block.data.heading2, block_type)
         elif block.data.heading3:
-            return self._text_to_markdown(block.data.heading3, block_type)
+            return await self._text_to_markdown(block.data.heading3, block_type)
         elif block.data.heading4:
-            return self._text_to_markdown(block.data.heading4, block_type)
+            return await self._text_to_markdown(block.data.heading4, block_type)
         elif block.data.heading5:
-            return self._text_to_markdown(block.data.heading5, block_type)
+            return await self._text_to_markdown(block.data.heading5, block_type)
         elif block.data.heading6:
-            return self._text_to_markdown(block.data.heading6, block_type)
+            return await self._text_to_markdown(block.data.heading6, block_type)
         elif block.data.heading7:
-            return self._text_to_markdown(block.data.heading7, block_type)
+            return await self._text_to_markdown(block.data.heading7, block_type)
         elif block.data.heading8:
-            return self._text_to_markdown(block.data.heading8, block_type)
+            return await self._text_to_markdown(block.data.heading8, block_type)
         elif block.data.heading9:
-            return self._text_to_markdown(block.data.heading9, block_type)
+            return await self._text_to_markdown(block.data.heading9, block_type)
         elif block.data.bullet:
-            return self._text_to_markdown(block.data.bullet, block_type)
+            return await self._list_to_markdown(block, options=options, block_type=block_type)
         elif block.data.ordered:
-            return self._text_to_markdown(block.data.ordered, block_type)
+            return await self._list_to_markdown(block, options=options, block_type=block_type)
         elif block.data.code:
-            return self._text_to_markdown(block.data.code, block_type)
+            return await self._text_to_markdown(block.data.code, block_type)
         elif block.data.equation:
-            return self._text_to_markdown(block.data.equation, block_type)
+            return await self._text_to_markdown(block.data.equation, block_type)
         elif block.data.quote:
-            return self._text_to_markdown(block.data.quote, block_type)
+            return await self._text_to_markdown(block.data.quote, block_type)
         elif block.data.todo:
-            return self._text_to_markdown(block.data.todo, block_type)
+            return await self._text_to_markdown(block.data.todo, block_type)
         elif block.data.callout:
-            return await self._callout_to_markdown(block)
+            return await self._callout_to_markdown(block, options=options)
         elif block.data.divider:
-            return self._divider_to_markdown(block)
+            return await self._divider_to_markdown(block)
         elif block.data.table:
-            return await self._table_to_markdown(block)
+            return await self._table_to_markdown(block, options=options)
         elif block.data.quote_container:
-            return await self._quote_container_to_markdown(block)
+            return await self._quote_container_to_markdown(block, options=options)
         elif block.data.board:
-            return await self._board_to_markdown(block.data.board, assets_path)
+            return await self._board_to_markdown(block.data.board, options=options)
         elif block.data.image:
-            return await self._image_to_markdown(block.data.image, assets_path)
+            return await self._image_to_markdown(block.data.image, options=options)
         return ""
