@@ -76,20 +76,20 @@ class PageHelper:
         if not text_run.text_element_style:
             return md
         if text_run.text_element_style.bold:
-            md = f"**{md}**"
+            md = f" **{md}** "
         if text_run.text_element_style.italic:
-            md = f"*{md}*"
+            md = f" *{md}* "
         if text_run.text_element_style.strikethrough:
-            md = f"~~{md}~~"
+            md = f" ~~{md}~~ "
         if text_run.text_element_style.underline:
-            md = f"_{md}_"
+            md = f" _{md}_ "
         if text_run.text_element_style.inline_code:
-            md = f"`{md}`"
+            md = f" `{md}` "
         if text_run.text_element_style.link:
             from urllib.parse import unquote
 
             url = unquote(text_run.text_element_style.link.url)
-            md = f"[{md}]({url})"
+            md = f" [{md}]({url}) "
         """忽略 background_color 和 foreground_color"""
         return md
 
@@ -97,7 +97,7 @@ class PageHelper:
         return f"$$ {equation.content.strip()} $$"
 
     async def _mention_doc_to_markdown(self, mention_doc: t_block.MentionDoc):
-        return f"[{mention_doc.title}]({mention_doc.url})"
+        return f" [{mention_doc.title}]({mention_doc.url}) "
 
     async def _text_element_to_markdown(
         self, styles: Union[t_block.TextStyle, None], element: t_block.TextElement
