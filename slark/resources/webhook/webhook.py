@@ -10,14 +10,14 @@ from slark.utils.time import datetime_now
 
 
 class AsyncWebhook(AsyncAPIResource):
-    async def post_feishu_card(
+    async def send_card(
         self, card: InteractiveCard, timeout: Union[httpx.Timeout, None] = None
     ) -> BaseResponse:
         return await self._post(
             self._client._webhook_url,
             body={
                 "msg_type": "interactive",
-                "card": card.json(exclude_none=True),
+                "card": card.model_dump(),
             },
             cast_to=BaseResponse,
             options={"timeout": timeout, "no_auth": True},
@@ -33,7 +33,7 @@ class AsyncWebhook(AsyncAPIResource):
     ):
         if subtitle is None:
             subtitle = datetime_now()
-        return await self.post_feishu_card(
+        return await self.send_card(
             builder.build_error_msg_card(msg, traceback, title, subtitle),
             timeout=timeout,
         )
@@ -47,7 +47,7 @@ class AsyncWebhook(AsyncAPIResource):
     ):
         if subtitle is None:
             subtitle = datetime_now()
-        return await self.post_feishu_card(
+        return await self.send_card(
             builder.build_success_msg_card(msg, title, subtitle),
             timeout=timeout,
         )

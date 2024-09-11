@@ -7,6 +7,7 @@ class BaseModel(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(
         use_enum_values=True,
         arbitrary_types_allowed=True,
+        extra="allow",
     )
 
     def model_dump(
