@@ -1,6 +1,7 @@
 from typing import Any, Union
 
 import httpx
+from requests_toolbelt import MultipartEncoder
 from typing_extensions import Literal
 
 from slark.resources._resources import AsyncAPIResource
@@ -37,12 +38,20 @@ class AsyncImage(AsyncAPIResource):
         Returns:
             UploadImageResponse: 返回值
         """
+        m = MultipartEncoder(
+            fields={
+                "image_type": image_type,
+                "image": ("image", image),
+            }
+        )
         return await self._post(
             API_PATH.image.upload,
             cast_to=UploadImageResponse,
             options={
-                "files": {"image": image},
-                "data": {"image_type": image_type},
+                "content": m.read(),
                 "timeout": timeout,
+                "headers": {
+                    "Content-Type": m.content_type,
+                },
             },
         )

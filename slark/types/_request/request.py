@@ -1,4 +1,4 @@
-from typing import Dict, TypedDict, Union
+from typing import Dict, Iterable, TypedDict, Union
 
 import httpx
 from typing_extensions import Literal
@@ -16,6 +16,7 @@ class RequestOptions(TypedDict):
     raw_response: bool
     files: Dict
     data: Dict
+    content: Union[bytes, str, Iterable[bytes], Iterable[str]]
 
 
 class FinalRequestOptions(BaseModel):
@@ -27,6 +28,7 @@ class FinalRequestOptions(BaseModel):
     timeout: Union[httpx.Timeout, None] = None
     files: Union[Dict, None] = None
     data: Union[Dict, None] = None
+    content: Union[bytes, str, Iterable[bytes], Iterable[str], None] = None
     no_auth: bool = False
     raw_response: bool = False
 

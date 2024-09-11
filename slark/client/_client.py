@@ -67,7 +67,7 @@ class AsyncAPIClient:
         content_type = headers.get("Content-Type")
         if options.json_data is not None and content_type is None:
             headers["Content-Type"] = "application/json; charset=utf-8"
-        if options.files is not None:
+        if options.files is not None or options.data is not None:
             headers["Content-Type"] = "multipart/form-data"
         kwargs = {}
         if options.timeout is not None:
@@ -80,6 +80,7 @@ class AsyncAPIClient:
             json=options.json_data,
             files=options.files,
             data=options.data,
+            content=options.content,
             **kwargs,
         )
 

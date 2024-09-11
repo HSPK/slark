@@ -356,7 +356,7 @@ class I18nBody(BaseModel):
 class InteractiveCard(BaseModel):
     config: Union[CardConfig, None] = None
     """config 用于配置卡片的全局行为，包括是否允许被转发、是否为共享卡片等。"""
-    card_link: Union[CardLink, None] = {}
+    card_link: Union[CardLink, None] = None
     """card_link 字段用于指定卡片整体的点击跳转链接。你可以配置一个默认链接，也可以分别为 PC 端、Android 端、iOS 端配置不同的跳转链接。"""
     i18n_elements: Union[I18nBody, None] = None
     """飞书卡片支持多语言设置。设置多语言后，卡片将根据用户的飞书客户端语言，自动展示对应语言的卡片内容，满足国际化业务需求。详情参考配置卡片多语言。"""

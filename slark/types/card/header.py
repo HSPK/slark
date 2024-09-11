@@ -131,7 +131,7 @@ class CardHeader(BaseModel):
     """标题后缀标签，最多设置 3 个 标签，超出不展示。可选。"""
     i18n_text_tag_list: Union[CardHeaderI18nTextTag, None] = None
     """国际化标题后缀标签。每个语言环境最多设置 3 个 tag，超出不展示。可选。同时配置原字段和国际化字段，优先生效国际化配置。"""
-    template: CardTemplate = CardTemplate.DEFAULT
+    template: CardTemplate = CardTemplate.DEFAULT.value
     """标题主题颜色。"""
     icon: Union[CardHeaderIcon, None] = None
     """自定义前缀图标"""
