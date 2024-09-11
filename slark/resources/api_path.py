@@ -108,6 +108,11 @@ class ASSETS:
 
 
 @final
+class IMAGE:
+    upload = "/im/v1/images"
+
+
+@final
 class API_PATH:
     knowledge_space = KNOWLEDGE_SPACE
     auth = AUTH
@@ -116,3 +121,4 @@ class API_PATH:
     documents = DOCUMENTS
     board = BOARD
     assets = ASSETS
+    image = IMAGE

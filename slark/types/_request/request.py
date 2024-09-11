@@ -14,6 +14,8 @@ class RequestOptions(TypedDict):
     max_retries: int
     no_auth: bool
     raw_response: bool
+    files: Dict
+    data: Dict
 
 
 class FinalRequestOptions(BaseModel):
@@ -23,7 +25,8 @@ class FinalRequestOptions(BaseModel):
     params: dict = {}
     max_retries: Union[int, None] = DEFAULT_MAX_RETRIES
     timeout: Union[httpx.Timeout, None] = None
-    json_data: Union[Dict] = None
+    files: Union[Dict, None] = None
+    data: Union[Dict, None] = None
     no_auth: bool = False
     raw_response: bool = False
 

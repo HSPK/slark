@@ -168,10 +168,6 @@ class ImageElement(BaseElement):
     后续用户点击卡片上的图片也能响应 card_link 链接跳转。"""
 
 
-class I18nBody(BaseModel):
-    zh_cn: List[BaseElement] = []
-
-
 class ColumnSetActionMultiUrl(BaseModel):
     url: Union[str, None] = None
     android_url: Union[str, None] = None
@@ -350,21 +346,24 @@ ElementType = Union[
     DivElement,
     HlineElement,
     FormElement,
-    IconElement,
 ]
 
 
+class I18nBody(BaseModel):
+    zh_cn: List[ElementType] = []
+
+
 class InteractiveCard(BaseModel):
-    config: CardConfig = CardConfig()
+    config: Union[CardConfig, None] = None
     """config 用于配置卡片的全局行为，包括是否允许被转发、是否为共享卡片等。"""
-    card_link: Union[CardLink, Dict] = {}
+    card_link: Union[CardLink, None] = {}
     """card_link 字段用于指定卡片整体的点击跳转链接。你可以配置一个默认链接，也可以分别为 PC 端、Android 端、iOS 端配置不同的跳转链接。"""
     i18n_elements: Union[I18nBody, None] = None
     """飞书卡片支持多语言设置。设置多语言后，卡片将根据用户的飞书客户端语言，自动展示对应语言的卡片内容，满足国际化业务需求。详情参考配置卡片多语言。"""
-    header: Union[CardHeader, Dict] = {}
+    header: Union[CardHeader, None] = None
     """标题组件 JSON 代码。详细字段说明参考标题组件。"""
-    elements: List[ElementType] = []
+    elements: Union[List[ElementType], None] = None
     """在 elements 字段中添加各个组件的 JSON 数据，组件将按数组顺序纵向流式排列。了解各个组件，参考组件概述。"""
-    fallback: Dict[str, str] = {}
+    fallback: Union[Dict, None] = None
     """fallback 用于为卡片添加全局降级规则。触发降级时，卡片将全局展示“请升级客户端至最新版本后查看”占位图。
     注意：该字段要求飞书客户端的版本为 V7.7 及以上。"""

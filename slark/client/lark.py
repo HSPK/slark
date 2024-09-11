@@ -18,6 +18,7 @@ class AsyncLark(AsyncAPIClient):
     docs: resources.AsyncDocuments
     board: resources.AsyncBoard
     assets: resources.AsyncAssets
+    messages: resources.AsyncMessages
 
     _app_id: Union[str, None]
     _app_secret: Union[str, None]
@@ -58,6 +59,7 @@ class AsyncLark(AsyncAPIClient):
         self.docs = resources.AsyncDocuments(self)
         self.board = resources.AsyncBoard(self)
         self.assets = resources.AsyncAssets(self)
+        self.messages = resources.AsyncMessages(self)
 
     @property
     def app_credentials(self) -> dict:
