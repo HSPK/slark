@@ -4,16 +4,21 @@ from typing import Union
 import httpx
 from typing_extensions import Literal
 
+import slark.types.card as card
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH
 from slark.types._utils import cached_property
 from slark.types.messages.request import (
     MESSAGE_TYPE,
+    EditMessageBody,
+    GetMessageParams,
     ReplyMessageBody,
     SendMessageBody,
     SendMessageParams,
 )
 from slark.types.messages.response import (
+    EditMessageResponse,
+    GetMessageResponse,
     ReplyMessageResponse,
     SendMessageResponse,
 )
@@ -150,4 +155,87 @@ class AsyncMessages(AsyncAPIResource):
             reply_in_thread=reply_in_thread,
             uuid=uuid,
             timeout=timeout,
+        )
+
+    async def reply_markdown(
+        self,
+        message_id: str,
+        content: str,
+        reply_in_thread: bool = False,
+        uuid: Union[str, None] = None,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        return await self.reply(
+            message_id=message_id,
+            msg_type="interactive",
+            content=card.InteractiveCard(elements=[card.MDElement(content=content)]).model_dump(),
+            reply_in_thread=reply_in_thread,
+            uuid=uuid,
+            timeout=timeout,
+        )
+
+    async def edit(
+        self,
+        message_id: str,
+        msg_type: Literal["text", "post"],
+        content: str,
+        timeout: Union[httpx.Timeout, None] = None,
+    ) -> EditMessageResponse:
+        """编辑消息调用该接口编辑已发送的消息内容，支持编辑文本、富文本消息。如需编辑卡片消息，请使用更新应用发送的消息卡片接口。\n
+            前提条件\n
+            应用需要开启机器人能力。\n
+            编辑用户单聊内的消息时，用户需要在机器人的可用范围内。\n
+            编辑群组内的消息时，机器人需要在该群组中，且拥有发言权限。\n
+            使用限制\n
+            一条消息最多可编辑 20 次。\n
+            仅可编辑当前操作者自己发送的消息。\n
+            不可编辑已撤回，已删除，超出可编辑时间的消息。可编辑时间由企业管理员设定，详情了解管理员设置撤回和编辑消息权限。
+
+
+        Args:
+            message_id (str): message ID
+            msg_type (Literal[&quot;text&quot;, &quot;post&quot;]): 消息类型。\n
+                可选值有：\n
+                text：文本\n
+                post：富文本\n
+                示例值："text"
+            content (str): 消息内容，JSON 结构序列化后的字符串。该参数的取值与 msg_type 对应，例如 msg_type 取值为 text，则该参数需要传入文本类型的内容。
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            EditMessageResponse: 返回值
+        """
+        return await self._put(
+            API_PATH.message.edit.format(message_id=message_id),
+            body=EditMessageBody(msg_type=msg_type, content=content).model_dump(),
+            cast_to=EditMessageResponse,
+            options={"timeout": timeout},
+        )
+
+    async def edit_text(
+        self,
+        message_id: str,
+        content: str,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        return await self.edit(
+            message_id=message_id,
+            msg_type="text",
+            content=json.dumps({"text": content}, ensure_ascii=False),
+            timeout=timeout,
+        )
+
+    async def get(
+        self,
+        message_id: str,
+        user_id_type: Literal["open_id", "union_id", "user_id"] = "open_id",
+        timeout: Union[httpx.Timeout, None] = None,
+    ) -> GetMessageResponse:
+        return await self._get(
+            API_PATH.message.get.format(message_id=message_id),
+            cast_to=GetMessageResponse,
+            options={
+                "params": GetMessageParams(user_id_type=user_id_type).model_dump(),
+                "timeout": timeout,
+            },
         )

@@ -43,6 +43,10 @@ class SendMessageParams(BaseModel):
     chat_id：以群 ID 来标识群聊。了解更多：如何获取群 ID"""
 
 
+class GetMessageParams(BaseModel):
+    user_id_type: Literal["open_id", "union_id", "user_id"] = "open_id"
+
+
 class SendMessageBody(BaseModel):
     receive_id: str
     """消息接收者的 ID，ID 类型与查询参数 receive_id_type 的取值一致。
@@ -84,3 +88,8 @@ class ReplyMessageBody(BaseModel):
     """自定义设置的唯一字符串序列，用于在回复消息时请求去重。不填则表示不去重。持有相同 uuid 的请求，在 1 小时内至多成功回复一条消息。\
         注意：你可以参考示例值自定义参数值。当回复的内容不同时，如果传入了该参数，则需要在每次请求时都更换该参数的取值。\
         示例值："选填，每次调用前请更换，如a0d69e20-1dd1-458b-k525-dfeca4015204" """
+
+
+class EditMessageBody(BaseModel):
+    msg_type: Literal["text", "post"]
+    content: str
