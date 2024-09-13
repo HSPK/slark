@@ -69,6 +69,8 @@ class AsyncAPIClient:
             headers["Content-Type"] = "application/json; charset=utf-8"
         if options.files is not None or options.data is not None:
             headers["Content-Type"] = "multipart/form-data"
+        # httpx uses connection pooling, uncompatible with asyncio
+        headers["Connection"] = "close"
         kwargs = {}
         if options.timeout is not None:
             kwargs["timeout"] = options.timeout

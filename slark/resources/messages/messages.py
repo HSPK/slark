@@ -168,7 +168,9 @@ class AsyncMessages(AsyncAPIResource):
         return await self.reply(
             message_id=message_id,
             msg_type="interactive",
-            content=card.InteractiveCard(elements=[card.MDElement(content=content)]).model_dump(),
+            content=card.InteractiveCard(
+                elements=[card.MDElement(content=content)]
+            ).model_dump_json(exclude_none=True),
             reply_in_thread=reply_in_thread,
             uuid=uuid,
             timeout=timeout,
