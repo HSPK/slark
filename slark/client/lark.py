@@ -32,6 +32,8 @@ class AsyncLark(AsyncAPIClient):
         app_id: Union[str, None] = None,
         app_secret: Union[str, None] = None,
         webhook: Union[str, None] = None,
+        verification_token: Union[str, None] = None,
+        encrypt_key: Union[str, None] = None,
         base_url: Union[str, httpx.URL] = "https://open.feishu.cn/open-apis/",
         max_retries: int = DEFAULT_MAX_RETRIES,
         timeout: httpx.Timeout = DEFAULT_TIMEOUT,
@@ -41,6 +43,8 @@ class AsyncLark(AsyncAPIClient):
         self._app_id = app_id
         self._app_secret = app_secret
         self._webhook_url = webhook
+        self._verification_token = verification_token
+        self._encrypt_key = encrypt_key
         self._token = None
         self._token_type = token_type
 
