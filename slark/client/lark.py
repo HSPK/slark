@@ -1,3 +1,4 @@
+import os
 from typing import Union
 
 import httpx
@@ -40,11 +41,11 @@ class AsyncLark(AsyncAPIClient):
         proxies: Union[httpx._types.ProxyTypes, None] = None,
         token_type: CredentailTypes = "tenant",
     ):
-        self._app_id = app_id
-        self._app_secret = app_secret
-        self._webhook_url = webhook
-        self._verification_token = verification_token
-        self._encrypt_key = encrypt_key
+        self._app_id = app_id or os.getenv("APP_ID", None)
+        self._app_secret = app_secret or os.getenv("APP_SECRET", None)
+        self._webhook_url = webhook or os.getenv("WEBHOOK_URL", None)
+        self._verification_token = verification_token or os.getenv("VERIFICATION_TOKEN", None)
+        self._encrypt_key = encrypt_key or os.getenv("ENCRYPT_KEY", None)
         self._token = None
         self._token_type = token_type
 

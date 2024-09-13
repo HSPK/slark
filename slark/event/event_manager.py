@@ -1,24 +1,30 @@
-import abc
-import hashlib
+import asyncio
+import inspect
 import json
+import threading
 import typing as t
 
-from slark.resources._resources import AsyncAPIResource
-from slark.types._utils import cached_property
+from fastapi.responses import Response
+from typing_extensions import TYPE_CHECKING
+
 from slark.types.event.common import EventType, LarkEvent
 from slark.utils.decrypt import AESCipher
 
+if TYPE_CHECKING:
+    from slark.client.lark import AsyncLark
 
-class AsyncEvent(AsyncAPIResource):
+
+class EventManager:
+    _client: "AsyncLark"
     _callback_map: t.Dict[EventType, t.Callable]
 
-    def __init__(self, client):
-        super().__init__(client)
+    def __init__(self, client: "AsyncLark"):
+        self._client = client
         self._callback_map = {}
 
     def register(self, event_type: EventType) -> t.Callable:
         def decorator(func):
-            self._callback_map[event_type] = func
+            self._callback_map[event_type.value] = func
             return func
 
         return decorator
@@ -37,6 +43,9 @@ class AsyncEvent(AsyncAPIResource):
     def _make_app(self, path: t.Union[str, None] = None):
         import fastapi
 
+        assert self._client._encrypt_key, "ENCRYPT_KEY is necessary"
+        assert self._client._verification_token, "VERIFICATION_TOKEN is necessary"
+
         app = fastapi.FastAPI()
 
         @app.post(path or "/")
@@ -54,7 +63,15 @@ class AsyncEvent(AsyncAPIResource):
                 raise Exception(f"Invalid event data: {decrypt_data}") from None
             event_type = lark_event.header.event_type
             callback = self._callback_map.get(event_type, None)
-            return await callback(lark_event)
+            if callback is not None:
+                if inspect.iscoroutinefunction(callback):
+                    _thread = threading.Thread(
+                        target=asyncio.run, args=(callback(self._client, lark_event),)
+                    )
+                else:
+                    _thread = threading.Thread(target=callback, args=(self._client, lark_event))
+                _thread.start()
+            return Response()
 
         return app
 

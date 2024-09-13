@@ -113,6 +113,16 @@ class IMAGE:
 
 
 @final
+class MESSAGE:
+    send = "im/v1/messages"
+    reply = "im/v1/messages/{message_id}/reply"
+    edit = "im/v1/messages/{message_id}"
+    forward = "im/v1/messages/{message_id}/forward"
+    get = "im/v1/messages/{message_id}"
+    get_resource = "im/v1/messages/{message_id}/resources/{file_key}"
+
+
+@final
 class API_PATH:
     knowledge_space = KNOWLEDGE_SPACE
     auth = AUTH
@@ -122,3 +132,4 @@ class API_PATH:
     board = BOARD
     assets = ASSETS
     image = IMAGE
+    message = MESSAGE

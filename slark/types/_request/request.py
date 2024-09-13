@@ -26,6 +26,7 @@ class FinalRequestOptions(BaseModel):
     params: dict = {}
     max_retries: Union[int, None] = DEFAULT_MAX_RETRIES
     timeout: Union[httpx.Timeout, None] = None
+    json_data: Union[Dict, None] = None
     files: Union[Dict, None] = None
     data: Union[Dict, None] = None
     content: Union[bytes, str, Iterable[bytes], Iterable[str], None] = None
