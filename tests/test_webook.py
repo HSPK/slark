@@ -24,7 +24,7 @@ async def test_send_card(client: AsyncLark):
             template=card.CardTemplate.BLUE,
             ud_icon=card.CardHeaderUDIcon(
                 token=card.UDIconToken.ADD_BOLD_OUTLINED,
-                style=card.CardHeaderUDIconStyle(color=card.UDIconColor.ORANGE),
+                style=card.CardHeaderUDIconStyle(color=card.Color.ORANGE),
             ),
         ),
         elements=[
