@@ -1156,10 +1156,3 @@ class UDIconToken(enum.Enum):
     MYAI_COLORFUL = "myai_colorful"
     APAAS_COLORFUL = "apaas_colorful"
     APPROVAL_COLORFUL = "approval_colorful"
-
-
-class UDIconColor(enum.Enum):
-    GREEN = "green"
-    ORANGE = "orange"
-    RED = "red"
-    GREY = "grey"

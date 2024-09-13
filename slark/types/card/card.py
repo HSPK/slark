@@ -5,8 +5,8 @@ from typing_extensions import Literal
 
 from .._common import BaseModel
 from .color import Color
-from .header import CardHeader
-from .ud_icon import UDIconColor, UDIconToken
+from .header import CardHeader, CardTemplate
+from .ud_icon import UDIconToken
 
 """飞书卡片文档链接 https://open.feishu.cn/document/uAjLw4CM/ukzMukzMukzM/feishu-cards/card-json-structure"""
 
@@ -90,7 +90,7 @@ class IconElement(BaseElement):
     token: Union[UDIconToken, None] = None
     """图标库中图标的 token。当 tag 为 standard_icon 时生效。枚举值参见图标库。"""
 
-    color: Union[UDIconColor, None] = None
+    color: Union[Color, None] = None
     """图标的颜色。支持设置线性和面性图标（即 token 末尾为 outlined 或 filled 的图标）的颜色。当 tag 为 standard_icon 时生效。枚举值参见颜色枚举值。"""
 
     img_key: Union[str, None] = None
@@ -353,6 +353,32 @@ class I18nBody(BaseModel):
     zh_cn: List[ElementType] = []
 
 
+class I18nHeaderElement(BaseModel):
+    title: Union[PlainTextElement, None] = None
+    subtitle: Union[PlainTextElement, None] = None
+    template: Union[CardTemplate, None] = None
+    ud_icon: Union[IconElement, None] = None
+
+
+class I18nHeader(BaseModel):
+    zh_cn: Union[I18nHeaderElement, None] = None
+    en_us: Union[I18nHeaderElement, None] = None
+    ja_jp: Union[I18nHeaderElement, None] = None
+    zh_hk: Union[I18nHeaderElement, None] = None
+    zh_tw: Union[I18nHeaderElement, None] = None
+    id_id: Union[I18nHeaderElement, None] = None
+    vi_vn: Union[I18nHeaderElement, None] = None
+    th_th: Union[I18nHeaderElement, None] = None
+    pt_br: Union[I18nHeaderElement, None] = None
+    es_es: Union[I18nHeaderElement, None] = None
+    ko_kr: Union[I18nHeaderElement, None] = None
+    de_de: Union[I18nHeaderElement, None] = None
+    fr_fr: Union[I18nHeaderElement, None] = None
+    it_it: Union[I18nHeaderElement, None] = None
+    ru_ru: Union[I18nHeaderElement, None] = None
+    ms_my: Union[I18nHeaderElement, None] = None
+
+
 class InteractiveCard(BaseModel):
     config: Union[CardConfig, None] = None
     """config 用于配置卡片的全局行为，包括是否允许被转发、是否为共享卡片等。"""
@@ -362,6 +388,8 @@ class InteractiveCard(BaseModel):
     """飞书卡片支持多语言设置。设置多语言后，卡片将根据用户的飞书客户端语言，自动展示对应语言的卡片内容，满足国际化业务需求。详情参考配置卡片多语言。"""
     header: Union[CardHeader, None] = None
     """标题组件 JSON 代码。详细字段说明参考标题组件。"""
+    i18n_header: Union[I18nHeader, None] = None
+    """多语言表头"""
     elements: Union[List[ElementType], None] = None
     """在 elements 字段中添加各个组件的 JSON 数据，组件将按数组顺序纵向流式排列。了解各个组件，参考组件概述。"""
     fallback: Union[Dict, None] = None

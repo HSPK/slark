@@ -2,7 +2,8 @@ import enum
 from typing import List, Union
 
 from .._common import BaseModel
-from .ud_icon import UDIconColor, UDIconToken
+from .color import Color
+from .ud_icon import UDIconToken
 
 
 class TextTagColor(enum.Enum):
@@ -112,7 +113,7 @@ class CardHeaderIcon(BaseModel):
 
 
 class CardHeaderUDIconStyle(BaseModel):
-    color: UDIconColor = UDIconColor.RED.value
+    color: Color = Color.RED.value
     """图标颜色。支持设置线性和面性图标（即 token 末尾为 `outlined` 或 `filled` 的图标）的颜色。"""
 
 
