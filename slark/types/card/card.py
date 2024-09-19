@@ -4,15 +4,15 @@ from typing import Dict, List, Union
 from typing_extensions import Literal
 
 from .._common import BaseModel
+from .base import BaseElement
 from .color import Color
 from .header import CardHeader, CardTemplate
-from .ud_icon import UDIconToken
+from .icon import IconElement
+from .interactive.button import ButtonElement
+from .interactive.input_box import InputBoxElement
+from .ud_icon import UDIconElement
 
 """飞书卡片文档链接 https://open.feishu.cn/document/uAjLw4CM/ukzMukzMukzM/feishu-cards/card-json-structure"""
-
-
-class BaseElement(BaseModel):
-    tag: str
 
 
 class TextSize(enum.Enum):
@@ -78,25 +78,6 @@ class PlainTextElement(BaseElement):
 
     lines: Union[int, None] = None
     """内容最大显示行数，超出设置行的内容用 ... 省略。"""
-
-
-class IconElement(BaseElement):
-    tag: str = "standard_icon"
-    """图标类型的标签。可取值：
-
-    standard_icon：使用图标库中的图标。
-    custom_icon：使用用自定义图片作为图标。"""
-
-    token: Union[UDIconToken, None] = None
-    """图标库中图标的 token。当 tag 为 standard_icon 时生效。枚举值参见图标库。"""
-
-    color: Union[Color, None] = None
-    """图标的颜色。支持设置线性和面性图标（即 token 末尾为 outlined 或 filled 的图标）的颜色。当 tag 为 standard_icon 时生效。枚举值参见颜色枚举值。"""
-
-    img_key: Union[str, None] = None
-    """自定义前缀图标的图片 key。当 tag 为 custom_icon 时生效。
-
-    图标 key 的获取方式：调用上传图片接口，上传用于发送消息的图片，并在返回值中获取图片的 image_key。"""
 
 
 class MDHrefUrlVal(BaseModel):
@@ -320,7 +301,16 @@ class CardConfig(BaseModel):
     style: CardConfigStyle = CardConfigStyle()
 
 
-FormElementElementType = Union[PlainTextElement, MDElement, ImageElement, DivElement, HlineElement]
+FormElementType = Union[
+    PlainTextElement,
+    MDElement,
+    ImageElement,
+    DivElement,
+    HlineElement,
+    InputBoxElement,
+    ButtonElement,
+    ColumnSetElement,
+]
 
 
 class FormElement(BaseElement):
@@ -328,8 +318,43 @@ class FormElement(BaseElement):
     """表单容器的标签。固定值为 form。"""
     name: str
     """表单容器的唯一标识。用于识别用户提交的数据属于哪个表单容器。在同一张卡片内，该字段的值全局唯一。"""
-    elements: List[BaseElement]
+    elements: List[FormElementType]
     """表单容器的子节点。可内嵌其它容器类组件和展示、交互组件，不支持内嵌表格、图表、和表单容器组件。"""
+
+
+class ImageCombinationList(BaseModel):
+    img_key: str
+
+
+class ImageCombinationElement(BaseElement):
+    tag: str = "img_combination"
+    combination_mode: Literal["double", "triple", "bisect", "trisect"] = "double"
+    corner_radius: Union[str, None] = None
+    img_list: List[ImageCombinationList]
+
+
+class PersonElement(BaseElement):
+    tag: str = "person"
+    size: Literal["extra_small", "small", "medium", "large"] = "medium"
+    show_avatar: bool = False
+    show_name: bool = True
+    style: Literal["normal", "capsule"] = "normal"
+    user_id: str
+
+
+class PersonListPerson(BaseModel):
+    user_id: str
+
+
+class PersonListElement(BaseElement):
+    tag: str = "person_list"
+    lines: Union[int, None] = None
+    show_name: bool = True
+    show_avatar: bool = False
+    size: Literal["extra_small", "small", "medium", "large"] = "medium"
+    persons: List[PersonListPerson]
+    icon: Union[IconElement, None] = None
+    ud_icon: Union[UDIconElement, None] = None
 
 
 class CardLink(BaseModel):
@@ -339,6 +364,126 @@ class CardLink(BaseModel):
     pc_url: Union[str, None] = None
 
 
+class ChartElement(BaseElement):
+    tag: str = "chart"
+    aspect_ratio: Union[Literal["1:1", "2:1", "4:3", "16:9"], None] = None
+    color_theme: Union[
+        Literal["brand", "rainbow", "complementary", "converse", "primary"], None
+    ] = None
+    """图表的主题样式。当图表内存在多个颜色时，可使用该字段调整颜色样式。若你在 chart_spec 字段中声明了样式类属性，该字段无效。\n
+    brand：默认样式，与飞书客户端主题样式一致。
+    rainbow：同色系彩虹色。
+    complementary：互补色。
+    converse：反差色。
+    primary：主色。"""
+
+    chart_spec: Dict
+    """基于 VChart 的图表定义。详细用法参考 VChart 官方文档。\n
+    提示：\n
+    在飞书 7.1 - 7.6 版本上，图表组件支持的 VChart 版本为 1.2.2；
+    在飞书 7.7 - 7.9 版本上，图表组件支持的 VChart 版本为 1.6.6；
+    在飞书 7.10 - 7.15 版本上，图表组件支持的 VChart 版本为 1.8.3；
+    在飞书 7.16 及以上版本上，图表组件支持的 VChart 版本为 1.10.1。了解 VChart 版本更新，参考 VChart Changelogs。"""
+
+    preview: Union[bool, None] = None
+    height: Union[str, None] = None
+
+
+class TableHeaderStyle(BaseModel):
+    text_align: Union[Literal["left", "center", "right"], None] = None
+    text_size: Union[Literal["normal", "heading"], None] = None
+    backgroud_style: Union[Literal["none", "grey"]] = None
+    text_color: Union[Literal["default", "grey"], None] = None
+    bold: Union[bool, None] = None
+    lines: Union[int, None] = None
+
+
+class TableColumnFormat(BaseModel):
+    precision: Union[int, None] = None
+    symbol: Union[str, None] = None
+    seperator: Union[bool, None] = None
+
+
+class TableColumn(BaseModel):
+    name: str
+    """自定义列的标记。用于唯一指定行数据对象数组中，需要将数据填充至这一行的具体哪个单元格中。"""
+    display_name: Union[str, None] = None
+    """在表头展示的列名称。不填或为空则不展示列名称。"""
+    width: Union[str, None] = None
+    """列宽度。可取值：\n
+    auto：自适应内容宽度\n
+    自定义宽度：自定义表格的列宽度，如 120px。取值范围是 [80px,600px] 的整数\n
+    自定义宽度百分比：自定义列宽度占当前表格画布宽度的百分比（表格画布宽度 = 卡片宽度-卡片左右内边距），如 25%。取值范围是 [1%,100%]"""
+
+    horizontal_align: Union[Literal["left", "center", "right"], None] = None
+    """列内数据对齐方式。可选值：\n
+    left：左对齐\n
+    center：居中对齐\n
+    right：右对齐"""
+
+    data_type: Literal["text", "lark_md", "options", "number", "persons", "date", "markdown"] = (
+        "text"
+    )
+    """列数据类型。可选值如下所示。了解不同类型用法，参考 data_type 字段说明一节。\n
+    text：不带格式的普通文本。为 data_type 默认值。
+    lark_md：支持部分 markdown 格式的文本。飞书 v7.10 及之后版本支持。详情参考普通文本-lark_md 支持的 Markdown 语法
+    options：选项标签
+    number：数字。默认在单元格中右对齐展示。若选择该数据类型，你可继续在 column 中添加 format 字段，设置数字的格式属性
+    persons：人员列表。为用户名称+头像样式
+    date：日期时间。需输入 Unix 标准毫秒级时间戳，飞书客户端将按用户本地时区展示日期时间。飞书 v7.6 及之后版本支持
+    markdown：支持完整 Markdown 语法的文本内容。详情参考富文本（Markdown）组件。飞书 v7.14 及之后版本支持"""
+
+    format: Union[TableColumnFormat, None] = None
+    date_format: Union[
+        Literal["YYYY/MM/DD", "YYYY/MM/DD HH:mm", "YYYY-MM-DD", "YYYY-MM-DD HH:mm"], str, None
+    ] = None
+    """该字段仅当 data_type 为 date 时生效。你可按需选择以下日期时间占位符，并使用任意分隔符组合。\n
+    YYYY：年
+    MM：月
+    DD：日
+    HH：小时
+    mm：分钟
+    ss：秒
+    推荐使用以下日期格式。默认按 RFC 3339 标准格式展示日期时间。
+
+    YYYY/MM/DD
+    YYYY/MM/DD HH:mm
+    YYYY-MM-DD
+    YYYY-MM-DD HH:mm
+    DD/MM/YYYY
+    MM/DD/YYYY"""
+
+
+class TableCellOption(BaseModel):
+    text: str
+    color: Color
+
+
+TableCellType = Union[
+    str,
+    int,
+    float,
+    TableCellOption,
+    List[str],
+]
+"""日期时间。需输入 Unix 标准毫秒级时间戳，飞书客户端将按用户本地时区展示日期时间。支持添加 date_format 字段，设置日期的格式属性。默认按 RFC 3339 标准格式展示日期时间。详情参考 date_format 字段说明。
+markdown type 支持完整 Markdown 语法的文本内容。详情参考富文本（Markdown）组件。"""
+
+
+class TableElement(BaseElement):
+    tag: str = "table"
+    page_size: Union[int, None] = None
+    row_height: Union[str, Literal["low", "middle", "high"], None] = None
+    header_style: Union[TableHeaderStyle, None] = None
+    columns: List[TableColumn]
+    rows: List[Dict[str, TableCellType]]
+
+
+class NoteElement(BaseElement):
+    tag: str = "note"
+    elements: List[Union[IconElement, PlainTextElement, ImageElement]]
+
+
 ElementType = Union[
     MDElement,
     ImageElement,
@@ -346,11 +491,34 @@ ElementType = Union[
     DivElement,
     HlineElement,
     FormElement,
+    PersonElement,
+    PersonListElement,
+    ChartElement,
+    ImageCombinationElement,
+    TableElement,
+    NoteElement,
+    ButtonElement,
+    InputBoxElement,
 ]
 
 
 class I18nBody(BaseModel):
-    zh_cn: List[ElementType] = []
+    zh_cn: Union[List[ElementType], None] = None
+    en_us: Union[List[ElementType], None] = None
+    ja_jp: Union[List[ElementType], None] = None
+    zh_hk: Union[List[ElementType], None] = None
+    zh_tw: Union[List[ElementType], None] = None
+    id_id: Union[List[ElementType], None] = None
+    vi_vn: Union[List[ElementType], None] = None
+    th_th: Union[List[ElementType], None] = None
+    pt_br: Union[List[ElementType], None] = None
+    es_es: Union[List[ElementType], None] = None
+    ko_kr: Union[List[ElementType], None] = None
+    de_de: Union[List[ElementType], None] = None
+    fr_fr: Union[List[ElementType], None] = None
+    it_it: Union[List[ElementType], None] = None
+    ru_ru: Union[List[ElementType], None] = None
+    ms_my: Union[List[ElementType], None] = None
 
 
 class I18nHeaderElement(BaseModel):

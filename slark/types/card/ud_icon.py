@@ -1,4 +1,8 @@
 import enum
+from typing import Union
+
+from .._common import BaseModel
+from .color import Color
 
 
 class UDIconToken(enum.Enum):
@@ -1156,3 +1160,14 @@ class UDIconToken(enum.Enum):
     MYAI_COLORFUL = "myai_colorful"
     APAAS_COLORFUL = "apaas_colorful"
     APPROVAL_COLORFUL = "approval_colorful"
+
+
+class UDIconStyle(BaseModel):
+    color: Color = Color.RED.value
+    """图标颜色。支持设置线性和面性图标（即 token 末尾为 `outlined` 或 `filled` 的图标）的颜色。"""
+
+
+class UDIconElement(BaseModel):
+    token: UDIconToken
+    """图标的 token"""
+    style: Union[UDIconStyle, None] = None

@@ -22,9 +22,9 @@ async def test_send_card(client: AsyncLark):
             title=card.CardHeaderTitle(content="Interactive Card"),
             subtitle=card.CardHeaderSubtitle(content="This is an interactive card"),
             template=card.CardTemplate.BLUE,
-            ud_icon=card.CardHeaderUDIcon(
+            ud_icon=card.UDIconElement(
                 token=card.UDIconToken.ADD_BOLD_OUTLINED,
-                style=card.CardHeaderUDIconStyle(color=card.Color.ORANGE),
+                style=card.UDIconStyle(color=card.Color.ORANGE),
             ),
         ),
         elements=[

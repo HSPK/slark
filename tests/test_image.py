@@ -17,7 +17,7 @@ async def test_image_upload(client: AsyncLark):
     demo = card.InteractiveCard(
         header=card.CardHeader(
             title=card.CardHeaderTitle(content="Test Image"),
-            ud_icon=card.CardHeaderUDIcon(token=card.UDIconToken.IMAGE_OUTLINED),
+            ud_icon=card.UDIconElement(token=card.UDIconToken.IMAGE_OUTLINED),
         ),
         elements=[
             card.ImageElement(img_key=img_key, alt=card.ImageTextElement(content="Test Image")),

@@ -2,8 +2,7 @@ import enum
 from typing import List, Union
 
 from .._common import BaseModel
-from .color import Color
-from .ud_icon import UDIconToken
+from .ud_icon import UDIconElement
 
 
 class TextTagColor(enum.Enum):
@@ -112,17 +111,6 @@ class CardHeaderIcon(BaseModel):
     """用作前缀图标的图片 key。"""
 
 
-class CardHeaderUDIconStyle(BaseModel):
-    color: Color = Color.RED.value
-    """图标颜色。支持设置线性和面性图标（即 token 末尾为 `outlined` 或 `filled` 的图标）的颜色。"""
-
-
-class CardHeaderUDIcon(BaseModel):
-    token: UDIconToken
-    """图标的 token"""
-    style: Union[CardHeaderUDIconStyle, None] = None
-
-
 class CardHeader(BaseModel):
     title: CardHeaderTitle
     """卡片主标题。必填。"""
@@ -136,5 +124,5 @@ class CardHeader(BaseModel):
     """标题主题颜色。"""
     icon: Union[CardHeaderIcon, None] = None
     """自定义前缀图标"""
-    ud_icon: Union[CardHeaderUDIcon, None] = None
+    ud_icon: Union[UDIconElement, None] = None
     """图标库中的前缀图标，和 icon 同时设置时以 ud_icon 为准。"""

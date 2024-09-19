@@ -30,7 +30,7 @@ def build_header_with_icon(title: str, subtitle: str, template: str, icon: str) 
         title=card.CardHeaderTitle(content=title),
         subtitle=card.CardHeaderSubtitle(content=subtitle),
         template=template,
-        ud_icon=card.CardHeaderUDIcon(token=icon),
+        ud_icon=card.UDIconElement(token=icon),
     )
 
 
