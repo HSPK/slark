@@ -1,12 +1,15 @@
 import json
+import re
 from typing import Union
 
+import anyio
 import httpx
 from typing_extensions import Literal
 
 import slark.types.card as card
 from slark.resources._resources import AsyncAPIResource
 from slark.resources.api_path import API_PATH
+from slark.types._common import BaseModel
 from slark.types._utils import cached_property
 from slark.types.messages.request import (
     MESSAGE_TYPE,
@@ -24,6 +27,12 @@ from slark.types.messages.response import (
 )
 
 from .image import AsyncImage
+
+
+class DownloadFileInfo(BaseModel):
+    filepath: str
+    filename: str
+    filetype: str
 
 
 class AsyncMessages(AsyncAPIResource):
@@ -240,4 +249,35 @@ class AsyncMessages(AsyncAPIResource):
                 "params": GetMessageParams(user_id_type=user_id_type).model_dump(),
                 "timeout": timeout,
             },
+        )
+
+    async def get_resource(
+        self,
+        message_id: str,
+        file_key: str,
+        type: Literal["image", "file"],
+        save_dir: str,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        response = await self._get(
+            API_PATH.message.get_resource.format(message_id=message_id, file_key=file_key),
+            options={
+                "timeout": timeout,
+                "raw_response": True,
+                "params": {"type": type},
+            },
+            cast_to=httpx.Response,
+        )
+        mime_type = response.headers["Content-Type"]
+        filename = re.findall(r'filename="(.+)"', response.headers["Content-Disposition"])[0]
+        filename = f"{message_id}_{file_key}_{filename}"
+        path = anyio.Path(save_dir) / filename
+        await path.parent.mkdir(parents=True, exist_ok=True)
+        f = await anyio.open_file(path, "wb")
+        await f.write(response.content)
+        await f.aclose()
+        return DownloadFileInfo(
+            filepath=path.as_posix(),
+            filename=filename,
+            filetype=mime_type,
         )

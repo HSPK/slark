@@ -81,7 +81,13 @@ class RichTextContent(BaseModel):
         return raw_text
 
 
-LARK_MSG_TYPE = Union[Literal["text", "post", "file", "folder", "audio", "media", "sticker"], str]
+class ImageContent:
+    image_key: str
+
+
+LARK_MSG_TYPE = Union[
+    Literal["text", "post", "file", "folder", "image", "audio", "media", "sticker"], str
+]
 
 LARK_MSG_TYPE_MAP = {
     "text": TextContent,
@@ -90,6 +96,7 @@ LARK_MSG_TYPE_MAP = {
     "media": MediaContent,
     "sticker": StickerContent,
     "post": RichTextContent,
+    "image": ImageContent,
 }
 
 
@@ -102,7 +109,7 @@ class LarkGetMessageSender(BaseModel):
 
 class LarkGetMessageBody(BaseModel):
     content: Union[
-        str, TextContent, RichTextContent, FileContent, AudioContent, MediaContent, StickerContent
+        str, TextContent, RichTextContent, FileContent, AudioContent, MediaContent, StickerContent, ImageContent
     ]
 
 
