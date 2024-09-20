@@ -81,7 +81,7 @@ class RichTextContent(BaseModel):
         return raw_text
 
 
-class ImageContent:
+class ImageContent(BaseModel):
     image_key: str
 
 
@@ -109,7 +109,14 @@ class LarkGetMessageSender(BaseModel):
 
 class LarkGetMessageBody(BaseModel):
     content: Union[
-        str, TextContent, RichTextContent, FileContent, AudioContent, MediaContent, StickerContent, ImageContent
+        str,
+        TextContent,
+        RichTextContent,
+        FileContent,
+        AudioContent,
+        MediaContent,
+        StickerContent,
+        ImageContent,
     ]
 
 
@@ -168,7 +175,14 @@ class LarkEventMessageBody(BaseModel):
     chat_type: Literal["p2p", "group"]
     message_type: LARK_MSG_TYPE
     content: Union[
-        str, TextContent, RichTextContent, FileContent, AudioContent, MediaContent, StickerContent
+        str,
+        TextContent,
+        RichTextContent,
+        FileContent,
+        AudioContent,
+        MediaContent,
+        StickerContent,
+        ImageContent,
     ]
     mentions: Union[List[LarkMessageMention], None] = None
     user_agent: Union[str, None] = None

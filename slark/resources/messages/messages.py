@@ -1,5 +1,4 @@
 import json
-import re
 from typing import Union
 
 import anyio
@@ -269,8 +268,8 @@ class AsyncMessages(AsyncAPIResource):
             cast_to=httpx.Response,
         )
         mime_type = response.headers["Content-Type"]
-        filename = re.findall(r'filename="(.+)"', response.headers["Content-Disposition"])[0]
-        filename = f"{message_id}_{file_key}_{filename}"
+        filetype, ext = mime_type.split("/")
+        filename = f"{filetype}_{message_id}_{file_key}_{type}.{ext}"
         path = anyio.Path(save_dir) / filename
         await path.parent.mkdir(parents=True, exist_ok=True)
         f = await anyio.open_file(path, "wb")
