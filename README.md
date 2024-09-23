@@ -251,3 +251,33 @@ await lark.docs.read_markdown(
 12. Jira问题
 13. 议程
 
+## Event Callback
+
+```python
+from dotenv import find_dotenv, load_dotenv
+
+from slark import AsyncLark, EventManager
+from slark.types.event.common import EventType, LarkEvent
+
+load_dotenv(find_dotenv())
+lark = AsyncLark()
+em = EventManager(lark)
+
+
+@em.register(EventType.IM_MESSAGE_RECEIVE_V1)
+async def test_event(lark: AsyncLark, ev: LarkEvent):
+    message = ev.event.message
+    if message.message_type == "image":
+        await lark.messages.get_resource(
+            message.message_id, message.content.image_key, "image", "uploads"
+        )
+    else:
+        await lark.messages.send_markdown(
+            ev.event.tenant_key,
+            ev.event.sender_open_id,
+            f"你发送了一条消息：{message.content}",
+        )
+
+
+em.listen(port=54467)
+```
