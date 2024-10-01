@@ -1,8 +1,8 @@
 import enum
 from typing import List, Union
 
-from .._common import BaseModel
-from .ud_icon import UDIconElement
+from ..._common import BaseModel
+from ..ud_icon import UDIconElement
 
 
 class TextTagColor(enum.Enum):

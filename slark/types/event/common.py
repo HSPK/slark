@@ -5,7 +5,8 @@ from fastapi import Request
 from typing_extensions import Literal
 
 from slark.types._common import BaseModel
-from slark.types.messages.common import LarkEventMessageBody, LarkUserID
+
+from .message import MessageEvent
 
 
 class EventType(enum.Enum):
@@ -52,18 +53,6 @@ class LarkEventHeader(BaseModel):
     tenant_key: str
 
 
-class LarkEventSender(BaseModel):
-    sender_id: LarkUserID
-    sender_type: str
-    tenant_key: str
-    """tenant key，为租户在飞书上的唯一标识，用来换取对应的tenant_access_token，也可以用作租户在应用里面的唯一标识"""
-
-
-class LarkEventBody(BaseModel):
-    sender: LarkEventSender
-    message: LarkEventMessageBody
-
-
 class InvalidEventException(Exception):
     def __init__(self, error_info):
         self.error_info = error_info
@@ -77,7 +66,7 @@ class InvalidEventException(Exception):
 class LarkEvent(BaseModel):
     schema: Literal["2.0"]
     header: LarkEventHeader
-    event: LarkEventBody
+    event: MessageEvent
 
     def _validate(self, request: Request, token: str, encrypt_key: str):
         if self.header.token != token:

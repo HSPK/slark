@@ -1,10 +1,12 @@
-from typing import Dict, Union
+from typing import Union
 
 from typing_extensions import Literal
 
-from ..._common import BaseModel
 from ..base import BaseElement
+from ..behavior import BehaviorType
+from ..confirm import ConfirmDialogue
 from ..icon import IconElement
+from ..text import PlainText
 
 """https://open.feishu.cn/document/uAjLw4CM/ukzMukzMukzM/feishu-cards/card-components/interactive-components/button"""
 
@@ -16,40 +18,6 @@ from ..icon import IconElement
 
 按钮组件支持嵌套在分栏、表单容器、折叠面板、循环容器中使用。
 """
-
-
-class ButtonText(BaseModel):
-    tag: str = "plain_text"
-    content: str
-    """文本的内容，最多支持 100 个字符。"""
-
-
-class ButtonConfirm(BaseModel):
-    title: ButtonText
-    text: ButtonText
-
-
-class OpenURLBehavior(BaseModel):
-    type: str = "open_url"
-    default_url: str
-    android_url: Union[str, None] = None
-    ios_url: Union[str, None] = None
-    pc_url: Union[str, None] = None
-    """可配置为 `lark://msgcard/unsupported_action` 声明当前端不允许跳转。"""
-
-
-class CallbackBehavior(BaseModel):
-    type: str = "callback"
-    value: Union[str, Dict, None] = None
-
-
-class FormActionBehavior(BaseModel):
-    type: str = "form_action"
-    value: Literal["submit", "reset"] = "submit"
-    """表单事件类型。可取值：
-
-    submit：提交整个表单
-    reset：重置整个表单"""
 
 
 class ButtonElement(BaseElement):
@@ -92,20 +60,20 @@ class ButtonElement(BaseElement):
     fill：卡片最大支持宽度
     [100,∞)px：自定义宽度，如 120px。超出卡片宽度时将按最大支持宽度展示"""
 
-    text: Union[ButtonText, None] = None
+    text: Union[PlainText, None] = None
     """按钮上的文本。"""
 
     icon: Union[IconElement, None] = None
     """添加图标作为文本前缀图标。支持自定义或使用图标库中的图标。"""
 
-    hover_tips: Union[ButtonText, None] = None
+    hover_tips: Union[PlainText, None] = None
     """用户在 PC 端将光标悬浮在交互容器上方时的文案提醒。默认为空。"""
 
     disabled: Union[bool, None] = None
-    disabled_tips: Union[ButtonText, None] = None
+    disabled_tips: Union[PlainText, None] = None
     """禁用按钮后，用户触发交互时的弹窗文案提醒。默认为空，即不弹窗。"""
 
-    confirm: Union[ButtonConfirm, None] = None
+    confirm: Union[ConfirmDialogue, None] = None
     """二次确认弹窗配置。指在用户提交时弹出二次确认弹窗提示；只有用户点击确认后，才提交输入的内容。该字段默认提供了确认和取消按钮，你只需要配置弹窗的标题与内容即可。"""
 
-    behaviors: Union[OpenURLBehavior, CallbackBehavior, FormActionBehavior, None] = None
+    behaviors: Union[BehaviorType, None] = None

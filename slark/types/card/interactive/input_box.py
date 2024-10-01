@@ -4,21 +4,13 @@ from typing_extensions import Literal
 
 from ..._common import BaseModel
 from ..base import BaseElement
-
-
-class InputBoxText(BaseModel):
-    content: str
-    tag: str = "plain_text"
-
-
-class InputBoxConfirm(BaseModel):
-    title: InputBoxText
-    text: InputBoxText
+from ..confirm import ConfirmDialogue
+from ..text import PlainText
 
 
 class InputBoxFallback(BaseModel):
     tag: str = "fallback_text"
-    text: Union[InputBoxText, None] = None
+    text: Union[PlainText, None] = None
 
 
 class InputBoxElement(BaseElement):
@@ -34,7 +26,7 @@ class InputBoxElement(BaseElement):
     """是否禁用该输入框。该属性仅支持飞书 V7.4 及以上版本的客户端。可选值：\n
     true：禁用输入框组件\n
     false：输入框组件保持可用状态"""
-    placeholder: Union[InputBoxText, None] = None
+    placeholder: Union[PlainText, None] = None
     """输入框中的占位文本。占位文本的内容，最多支持 100 个字符。"""
     default_value: Union[str, None] = None
     """输入框中为用户预填写的内容。展示为用户在输入框中输入文本后待提交的样式。"""
@@ -62,7 +54,7 @@ class InputBoxElement(BaseElement):
     """输入框的最大展示行数。仅当 auto_resize 为 true 时有效。注意：\n
     取值为大于等于 1 的整数。否则，小于 1 则自动取 1，不为整数则四舍五入取整。
     取值为空时不限制输入框的最大文本展示高度（默认值），但前端渲染时，输入框可展示的最大高度不超过 x 行。"""
-    label: Union[InputBoxText, None] = None
+    label: Union[PlainText, None] = None
     """文本标签，即对输入框的描述，用于提示用户要填写的内容。多用于表单容器中内嵌的输入框组件。"""
     label_position: Union[Literal["top", "left"], None] = None
     """文本标签的位置。可取值：\n
@@ -71,7 +63,7 @@ class InputBoxElement(BaseElement):
     注意：在移动端等窄屏幕场景下，文本标签将自适应固定展示在输入框上方。"""
     value: Union[str, Dict, None] = None
     """你可在交互事件中自定义回传数据，支持 string 或 object 数据类型。"""
-    confirm: Union[InputBoxConfirm, None] = None
+    confirm: Union[ConfirmDialogue, None] = None
     """二次确认弹窗配置。指在用户提交时弹出二次确认弹窗提示；只有用户点击确认后，才提交输入的内容。该字段默认提供了确认和取消按钮，你只需要配置弹窗的标题与内容即可。\n
     注意：confirm 字段仅在用户点击包含提交属性的按钮时才会触发二次确认弹窗。"""
     fallback: Union[InputBoxFallback, Literal["drop"], None] = None
