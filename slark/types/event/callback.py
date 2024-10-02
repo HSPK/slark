@@ -4,9 +4,9 @@ from .._common import BaseModel
 
 
 class CallbackOperator(BaseModel):
-    tenant_key: str
-    user_id: str
-    open_id: str
+    tenant_key: Union[str, None] = None
+    user_id: Union[str, None] = None
+    open_id: Union[str, None] = None
 
 
 class CallbackAction(BaseModel):

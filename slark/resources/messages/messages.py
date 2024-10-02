@@ -19,6 +19,7 @@ from slark.types.messages.request import (
     SendMessageParams,
 )
 from slark.types.messages.response import (
+    BaseResponse,
     EditMessageResponse,
     GetMessageResponse,
     ReplyMessageResponse,
@@ -184,6 +185,23 @@ class AsyncMessages(AsyncAPIResource):
             timeout=timeout,
         )
 
+    async def reply_card(
+        self,
+        message_id: str,
+        card: card.InteractiveCard,
+        reply_in_thread: bool = False,
+        uuid: Union[str, None] = None,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        return await self.reply(
+            message_id=message_id,
+            msg_type="interactive",
+            content=card.model_dump_json(exclude_none=True),
+            reply_in_thread=reply_in_thread,
+            uuid=uuid,
+            timeout=timeout,
+        )
+
     async def edit(
         self,
         message_id: str,
@@ -233,6 +251,33 @@ class AsyncMessages(AsyncAPIResource):
             msg_type="text",
             content=json.dumps({"text": content}, ensure_ascii=False),
             timeout=timeout,
+        )
+
+    async def edit_card(
+        self,
+        message_id: str,
+        card: card.InteractiveCard,
+        timeout: Union[httpx.Timeout, None] = None,
+    ):
+        """[更新卡片消息](https://open.feishu.cn/document/server-docs/im-v1/message-card/patch)\
+            若以 user_access_token 更新消息，该操作用户必须是卡片消息的发送者。\
+            仅支持更新未撤回的共享卡片消息。你需在更新前后卡片的 config 属性中，均显式声明 "update_multi":true。如果更新前后的卡片存在非共享卡片，可能导致更新异常。
+
+        Args:
+            message_id (str): message ID
+            card (card.InteractiveCard): 卡片消息内容
+            timeout (Union[httpx.Timeout, None], optional): Timeout. Defaults to None.
+
+        Returns:
+            BaseResponse: 返回值
+        """
+        return await self._patch(
+            API_PATH.message.edit.format(message_id=message_id),
+            body={
+                "content": card.model_dump_json(exclude_none=True),
+            },
+            cast_to=BaseResponse,
+            options={"timeout": timeout},
         )
 
     async def get(

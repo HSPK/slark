@@ -1,11 +1,13 @@
 import enum
 import hashlib
+from typing import Union
 
 from fastapi import Request
 from typing_extensions import Literal
 
 from slark.types._common import BaseModel
 
+from .callback import CallbackEvent
 from .message import MessageEvent
 
 
@@ -43,6 +45,10 @@ class EventType(enum.Enum):
     IM_CHAT_ACCESS_EVENT_BOT_P2P_CHAT_ENTERED_V1 = "im.chat.access_event.bot_p2p_chat_entered_v1"
     """用户进入与机器人的会话时触发此事件"""
 
+    CARD_ACTION_TRIGGER = "card.action.trigger"
+    """卡片回传交互作用于飞书卡片的 请求回调 交互组件。当终端用户点击飞书卡片上的回传交互组件后，你在开发者后台应用内注册的回调请求地址将会收到 卡片回传交互 回调。该回调包含了用户与卡片之间的交互信息。\
+        你的业务服务器接收到回调请求后，需要在 3 秒内响应回调请求，声明通过弹出 Toast 提示、更新卡片、保持原内容不变等方式响应用户交互。"""
+
 
 class LarkEventHeader(BaseModel):
     event_id: str
@@ -66,7 +72,7 @@ class InvalidEventException(Exception):
 class LarkEvent(BaseModel):
     schema: Literal["2.0"]
     header: LarkEventHeader
-    event: MessageEvent
+    event: Union[MessageEvent, CallbackEvent]
 
     def _validate(self, request: Request, token: str, encrypt_key: str):
         if self.header.token != token:

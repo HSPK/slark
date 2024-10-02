@@ -9,7 +9,7 @@ from .container.form import FormElement
 from .container.interactive_container import InteractiveContainerElement
 from .displaying.chart import ChartElement
 from .displaying.divider import HlineElement
-from .displaying.header import CardHeader, CardTemplate
+from .displaying.header import CardHeader, CardHeaderTextTag, CardTemplate
 from .displaying.image import ImageElement
 from .displaying.image_combination import ImageCombinationElement
 from .displaying.markdown import MDElement
@@ -59,19 +59,19 @@ class CardConfigStyle(BaseModel):
 
 
 class CardConfig(BaseModel):
-    enable_forward: bool = True
+    enable_forward: Union[bool, None] = None
     """是否支持转发卡片。默认值 true"""
-    update_multi: bool = True
+    update_multi: Union[bool, None] = None
     """是否为共享卡片。为 true 时即更新卡片的内容对所有收到这张卡片的人员可见。默认值 false。"""
-    width_mode: Literal["fill", "compact", "default"] = "fill"
+    width_mode: Union[Literal["fill", "compact", "default"], None] = None
     """卡片宽度模式。支持 "compact"（紧凑宽度 400px）模式、"fill"（撑满聊天窗口宽度）模式和 "default" 默认模式(宽度上限为 600px)。"""
-    compact_width: bool = True
+    compact_width: Union[bool, None] = None
     """已废弃字段。是否为紧凑型卡片宽度。与 width_mode 属性同时设置时，width_mode 将生效。"""
-    use_custom_translation: bool = False
+    use_custom_translation: Union[bool, None] = None
     """是否使用自定义翻译数据。默认值 false。为 true 时则在用户点击消息翻译后，使用 i18n 对应的目标语种作为翻译结果。若 i18n 取不到，则使用当前内容请求翻译，不使用自定义翻译数据。"""
-    enable_forward_interaction: bool = False
+    enable_forward_interaction: Union[bool, None] = None
     """转发的卡片是否仍然支持回传交互。默认值 false。"""
-    style: CardConfigStyle = CardConfigStyle()
+    style: Union[CardConfigStyle, None] = None
 
 
 class CardLink(BaseModel):
@@ -136,6 +136,7 @@ class I18nHeaderElement(BaseModel):
     subtitle: Union[PlainTextElement, None] = None
     template: Union[CardTemplate, None] = None
     ud_icon: Union[IconElement, None] = None
+    text_tag_list: Union[List[CardHeaderTextTag], None] = None
 
 
 class I18nHeader(BaseModel):

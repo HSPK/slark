@@ -5,6 +5,7 @@ import threading
 import typing as t
 
 from fastapi.responses import Response
+from loguru import logger
 from typing_extensions import TYPE_CHECKING
 
 from slark.types.event.common import EventType, LarkEvent
@@ -22,9 +23,12 @@ class EventManager:
         self._client = client
         self._callback_map = {}
 
-    def register(self, event_type: EventType) -> t.Callable:
+    def register(self, event_type: EventType, *, run_in_thread: bool = True) -> t.Callable:
         def decorator(func):
-            self._callback_map[event_type.value] = func
+            self._callback_map[event_type.value] = {
+                "func": func,
+                "run_in_thread": run_in_thread,
+            }
             return func
 
         return decorator
@@ -59,18 +63,27 @@ class EventManager:
                 return {"challenge": decrypt_data.get("challenge")}
             try:
                 lark_event = LarkEvent.model_validate(decrypt_data)
-            except Exception:
-                raise Exception(f"Invalid event data: {decrypt_data}") from None
+            except Exception as e:
+                raise Exception(f"Invalid event data: {decrypt_data}") from e
             event_type = lark_event.header.event_type
             callback = self._callback_map.get(event_type, None)
             if callback is not None:
-                if inspect.iscoroutinefunction(callback):
-                    _thread = threading.Thread(
-                        target=asyncio.run, args=(callback(self._client, lark_event),)
-                    )
+                func = callback["func"]
+                if callback["run_in_thread"]:
+                    if inspect.iscoroutinefunction(func):
+                        _thread = threading.Thread(
+                            target=asyncio.run, args=(func(self._client, lark_event),)
+                        )
+                    else:
+                        _thread = threading.Thread(target=func, args=(self._client, lark_event))
+                    _thread.start()
                 else:
-                    _thread = threading.Thread(target=callback, args=(self._client, lark_event))
-                _thread.start()
+                    if inspect.iscoroutinefunction(func):
+                        return await func(self._client, lark_event)
+                    else:
+                        return func(self._client, lark_event)
+            else:
+                logger.warning(f"Unhandled event: {event_type}")
             return Response()
 
         return app

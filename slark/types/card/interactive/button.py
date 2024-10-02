@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 
 from typing_extensions import Literal
 
@@ -45,6 +45,10 @@ class ButtonElement(BaseElement):
     danger_filled：红底白字按钮
     laser：镭射按钮"""
 
+    name: str
+    """按钮的名称，用于标识按钮。"""
+    form_action_type: Literal["submit", "reset", "none"] = "none"
+    """按钮的行为。可选值"submit"、"reset"、"none"。"""
     size: Literal["tiny", "small", "medium", "large"] = "medium"
     """按钮的尺寸。可选值：
 
@@ -76,4 +80,4 @@ class ButtonElement(BaseElement):
     confirm: Union[ConfirmDialogue, None] = None
     """二次确认弹窗配置。指在用户提交时弹出二次确认弹窗提示；只有用户点击确认后，才提交输入的内容。该字段默认提供了确认和取消按钮，你只需要配置弹窗的标题与内容即可。"""
 
-    behaviors: Union[BehaviorType, None] = None
+    behaviors: Union[List[BehaviorType], None] = None

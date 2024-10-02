@@ -83,7 +83,7 @@ class CardHeaderTextTag(BaseModel):
     tag: str = "text_tag"
     text: CardHeaderTextTagText
     """标签内容"""
-    color: TextTagColor = TextTagColor.NEUTRAL
+    color: TextTagColor = TextTagColor.NEUTRAL.value
     """标签颜色"""
 
 

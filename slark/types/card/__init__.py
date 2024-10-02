@@ -54,6 +54,7 @@ from .displaying.table import (
     TableHeaderStyle,
 )
 from .icon import IconElement
+from .interactive.action import ActionElements, ActionElementType
 from .interactive.button import ButtonElement
 from .interactive.checker import CheckerElement
 from .interactive.date_picker import DatePickerElement
@@ -70,6 +71,8 @@ from .text import PlainText, TextSize
 from .ud_icon import UDIconElement, UDIconStyle, UDIconToken
 
 __all__ = [
+    "ActionElementType",
+    "ActionElements",
     "BaseElement",
     "Color",
     "CardHeader",

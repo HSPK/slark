@@ -281,3 +281,148 @@ async def test_event(lark: AsyncLark, ev: LarkEvent):
 
 em.listen(port=54467)
 ```
+
+
+## Card Callback
+
+```python
+from typing import Optional
+from typing_extensions import Literal
+
+import slark.types.card as card
+
+
+def build_docdb_save_card(
+    stage: Literal["ask", "saving", "fail", "success"],
+    input_value: Optional[str] = None,
+    value: Optional[dict] = {},
+) -> card.InteractiveCard:
+    if stage == "ask" or stage == "fail":
+        disabled = False
+    else:
+        disabled = True
+    msg = {
+        "ask": "是否保存至文档库",
+        "saving": "保存中, 请稍后",
+        "fail": "保存失败, 请重试",
+        "success": "保存成功",
+    }
+    color = {
+        "ask": card.CardTemplate.BLUE,
+        "saving": card.CardTemplate.ORANGE,
+        "fail": card.CardTemplate.RED,
+        "success": card.CardTemplate.GREEN,
+    }
+    return card.InteractiveCard(
+        config=card.CardConfig(update_multi=True),
+        i18n_elements=card.I18nBody(
+            zh_cn=[
+                card.FormElement(
+                    tag="form",
+                    name="form_save_to_docdb",
+                    elements=[
+                        card.InputBoxElement(
+                            name="input_save_to_docdb",
+                            required=False,
+                            disabled=disabled,
+                            default_value=input_value,
+                            placeholder=card.PlainText(tag="plain_text", content="请输入文档描述"),
+                        ),
+                        card.ColumnSetElement(
+                            margin="10px 0px 10px 0px",
+                            columns=[
+                                card.ColumnElement(
+                                    elements=[
+                                        card.ButtonElement(
+                                            type="primary",
+                                            disabled=disabled,
+                                            text=card.PlainText(tag="plain_text", content="保存"),
+                                            form_action_type="submit",
+                                            name="button_save_to_docdb",
+                                            behaviors=[
+                                                card.CallbackBehavior(
+                                                    value={
+                                                        "event": "save_to_docdb",
+                                                        **value,
+                                                    }
+                                                )
+                                            ],
+                                        )
+                                    ],
+                                ),
+                            ],
+                        ),
+                    ],
+                )
+            ],
+        ),
+        i18n_header=card.I18nHeader(
+            zh_cn=card.I18nHeaderElement(
+                title=card.PlainTextElement(content=msg[stage]),
+                template=color[stage],
+                ud_icon=card.IconElement(token=card.UDIconToken.FILE_LINK_DOCX_OUTLINED),
+            ),
+        ),
+    )
+
+```
+
+`server.py`
+
+```python
+import anyio
+from dotenv import find_dotenv, load_dotenv
+from fastapi import BackgroundTasks
+from fastapi.responses import JSONResponse
+
+from card_docdb import build_docdb_save_card
+from slark import AsyncLark, EventManager
+from slark.types.event import CallbackResponse, CallbackToast, EventType, LarkEvent
+
+load_dotenv(find_dotenv())
+lark = AsyncLark()
+em = EventManager(lark)
+
+
+@em.register(EventType.IM_MESSAGE_RECEIVE_V1)
+async def test_event(lark: AsyncLark, ev: LarkEvent):
+    value = {"file_key": ev.event.message.content, "file_type": "message"}
+    card = build_docdb_save_card(stage="ask", value=value)
+    return await lark.messages.reply_card(ev.event.message.message_id, card=card)
+
+
+@em.register(EventType.CARD_ACTION_TRIGGER, run_in_thread=False)
+async def card_action_trigger(lark: AsyncLark, ev: LarkEvent):
+    value = ev.event.action.value
+    from pprint import pprint
+    pprint(value)
+    if value["event"] != "save_to_docdb":
+        return JSONResponse(
+            content=CallbackResponse(
+                toast=CallbackToast(type="info", content="未知事件"),
+            ).model_dump(),
+        )
+
+    async def reply():
+        input_value = ev.event.action.form_value.get("input_save_to_docdb")
+        card = build_docdb_save_card(stage="saving", input_value=input_value, value=value)
+        await lark.messages.edit_card(ev.event.context.open_message_id, card)
+        await anyio.sleep(1)
+        card = build_docdb_save_card(stage="success", input_value=input_value, value=value)
+        await lark.messages.edit_card(ev.event.context.open_message_id, card)
+        await anyio.sleep(1)
+        card = build_docdb_save_card(stage="fail", input_value=input_value, value=value)
+        await lark.messages.edit_card(ev.event.context.open_message_id, card)
+
+    tasks = BackgroundTasks()
+    tasks.add_task(reply)
+    return JSONResponse(
+        content=CallbackResponse(
+            toast=CallbackToast(type="info", content="保存中"),
+        ).model_dump(),
+        background=tasks,
+    )
+
+
+em.listen(port=54467)
+```
