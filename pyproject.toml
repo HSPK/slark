@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "slark"
-version = "0.1.19"
+version = "0.1.20"
 description = "# SLARK Simple LARK(Feishu) SDK"
 authors = ["HSPK <whxway@whu.edu.cn>"]
 readme = "README.md"
@@ -30,8 +30,6 @@ python-dotenv = "1.0.0"
 pytest-asyncio = "^0.23.8"
 
 
-
-
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3.5.0,<3.6.0"
 ruff = "^0.5.5"
@@ -41,11 +39,6 @@ name = "mirror"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 priority = "primary"
 
-[tool.poetry-dynamic-versioning]
-enable = true
-[build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
