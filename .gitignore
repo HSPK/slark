@@ -2,3 +2,4 @@ dist/
 test.ipynb
 __pycache__/
 .env
+assets/

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "slark"
-version = "0.0.0"
+version = "0.1.19"
 description = "# SLARK Simple LARK(Feishu) SDK"
 authors = ["HSPK <whxway@whu.edu.cn>"]
 readme = "README.md"
