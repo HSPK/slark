@@ -20,6 +20,7 @@ class AsyncLark(AsyncAPIClient):
     board: resources.AsyncBoard
     assets: resources.AsyncAssets
     messages: resources.AsyncMessages
+    drive: resources.AsyncDrive
 
     _app_id: Union[str, None]
     _app_secret: Union[str, None]
@@ -57,6 +58,7 @@ class AsyncLark(AsyncAPIClient):
         )
 
         self.auth = resources.AsyncAuth(self)
+        self.drive = resources.AsyncDrive(self)
         self.webhook = resources.AsyncWebhook(self)
         self.knowledge_space = resources.KnowledgeSpace(self)
         self.sheets = resources.AsyncSpreadsheets(self)

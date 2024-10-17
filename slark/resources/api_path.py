@@ -123,6 +123,16 @@ class MESSAGE:
 
 
 @final
+class DRIVE_FILE:
+    download = "drive/v1/files/{file_token}/download"
+
+
+@final
+class DRIVE:
+    file = DRIVE_FILE
+
+
+@final
 class API_PATH:
     knowledge_space = KNOWLEDGE_SPACE
     auth = AUTH
@@ -133,3 +143,4 @@ class API_PATH:
     assets = ASSETS
     image = IMAGE
     message = MESSAGE
+    drive = DRIVE

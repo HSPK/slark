@@ -3,6 +3,7 @@ from .auth import AsyncAuth
 from .bitable.bitable import AsyncBiTable
 from .board.board import AsyncBoard
 from .documents.documents import AsyncDocuments
+from .drive.drive import AsyncDrive
 from .knowledge_space.knowledge_space import KnowledgeSpace
 from .messages.messages import AsyncMessages
 from .sheets.sheets import AsyncSpreadsheets
@@ -18,4 +19,5 @@ __all__ = [
     "AsyncBoard",
     "AsyncAssets",
     "AsyncMessages",
+    "AsyncDrive",
 ]

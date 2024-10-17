@@ -1,5 +1,6 @@
 import enum
 import hashlib
+import warnings
 from typing import Union
 
 from fastapi import Request
@@ -10,6 +11,7 @@ from slark.types._common import BaseModel
 from .callback import CallbackEvent
 from .message import MessageEvent
 
+warnings.filterwarnings("ignore", category=UserWarning)
 
 class EventType(enum.Enum):
     IM_MESSAGE_RECEIVE_V1 = "im.message.receive_v1"
