@@ -6,21 +6,21 @@ from loguru import logger
 
 from slark import resources
 from slark._constants import DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT
-from slark.client._client import AsyncAPIClient
+from slark.client._sync_client import APIClient
 from slark.types.auth import CredentailTypes, TokenBase
 
 
-class AsyncLark(AsyncAPIClient):
-    auth: resources.AsyncAuth
-    webhook: resources.AsyncWebhook
-    knowledge_space: resources.AsyncKnowledgeSpace
-    sheets: resources.AsyncSpreadsheets
-    bitables: resources.AsyncBiTable
-    docs: resources.AsyncDocuments
-    board: resources.AsyncBoard
-    assets: resources.AsyncAssets
-    messages: resources.AsyncMessages
-    drive: resources.AsyncDrive
+class Lark(APIClient):
+    auth: resources.Auth
+    webhook: resources.Webhook
+    knowledge_space: resources.KnowledgeSpace
+    sheets: resources.Spreadsheets
+    bitables: resources.BiTable
+    docs: resources.Documents
+    board: resources.Board
+    assets: resources.Assets
+    messages: resources.Messages
+    drive: resources.Drive
 
     _app_id: Union[str, None]
     _app_secret: Union[str, None]
@@ -57,16 +57,16 @@ class AsyncLark(AsyncAPIClient):
             proxies=proxies,
         )
 
-        self.auth = resources.AsyncAuth(self)
-        self.drive = resources.AsyncDrive(self)
-        self.webhook = resources.AsyncWebhook(self)
-        self.knowledge_space = resources.AsyncKnowledgeSpace(self)
-        self.sheets = resources.AsyncSpreadsheets(self)
-        self.bitables = resources.AsyncBiTable(self)
-        self.docs = resources.AsyncDocuments(self)
-        self.board = resources.AsyncBoard(self)
-        self.assets = resources.AsyncAssets(self)
-        self.messages = resources.AsyncMessages(self)
+        self.auth = resources.Auth(self)
+        self.drive = resources.Drive(self)
+        self.webhook = resources.Webhook(self)
+        self.knowledge_space = resources.KnowledgeSpace(self)
+        self.sheets = resources.Spreadsheets(self)
+        self.bitables = resources.BiTable(self)
+        self.docs = resources.Documents(self)
+        self.board = resources.Board(self)
+        self.assets = resources.Assets(self)
+        self.messages = resources.Messages(self)
 
     @property
     def app_credentials(self) -> dict:
@@ -77,11 +77,11 @@ class AsyncLark(AsyncAPIClient):
             "app_secret": self._app_secret,
         }
 
-    async def get_auth_headers(self) -> dict:
+    def get_auth_headers(self) -> dict:
         if self._token is None or self._token.is_expired:
             if self._token_type == "tenant":
                 logger.debug("Refreshing tenant access token")
-                self._token = await self.auth.token.get_tenant_access_token()
+                self._token = self.auth.token.get_tenant_access_token()
             else:
                 raise NotImplementedError(f"{self._token_type} token is not supported")
         return {

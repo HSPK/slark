@@ -1,5 +1,9 @@
-from slark.resources._resources import AsyncAPIResource
+from slark.resources._resources import APIResource, AsyncAPIResource
 
 
 class AsyncView(AsyncAPIResource):
+    pass
+
+
+class View(APIResource):
     pass
