@@ -37,3 +37,7 @@ default-groups = ["test", "dev"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
