@@ -1,44 +1,39 @@
-[tool.poetry]
+[project]
 name = "slark"
 version = "0.1.22"
 description = "# SLARK Simple LARK(Feishu) SDK"
-authors = ["HSPK <whxway@whu.edu.cn>"]
+authors = [{ name = "HSPK", email = "whxway@whu.edu.cn" }]
+requires-python = "~=3.8"
 readme = "README.md"
+dependencies = [
+    "pydantic>2",
+    "httpx>=0.27.0,<0.28",
+    "loguru>=0.7.2,<0.8",
+    "arrow>=1.3.0,<2",
+    "pandas>=2,<3",
+    "Pillow>=10.4.0,<11",
+    "requests-toolbelt>=1.0.0,<2",
+]
 
-[tool.poetry.dependencies]
-python = "^3.8"
-pydantic = ">2"
-httpx = "^0.27.0"
-loguru = "^0.7.2"
-arrow = "^1.3.0"
-pandas = "^2.0.3"
-# numpy = "<2"
-Pillow = "^10.4.0"
-requests-toolbelt = "^1.0.0"
-pycryptodome = "^3.19.0"
-fastapi = "^0.114.1"
-uvicorn = "^0.30.6"
+[dependency-groups]
+test = [
+    "jupyter>=1.0.0,<2",
+    "ipykernel>=6.29.5,<7",
+    "pytest>=8.3.2,<9",
+    "anyio>=4.4.0,<5",
+    "trio>=0.26.0,<0.27",
+    "python-dotenv==1.0.0",
+    "pytest-asyncio>=0.23.8,<0.24",
+]
+dev = ["pre-commit>=3.5.0,<3.6.0", "ruff>=0.5.5,<0.6"]
+event = [
+    "fastapi>=0.114.1,<0.115",
+    "pycryptodome>=3.19.0,<4",
+    "uvicorn>=0.30.6,<0.31",
+]
 
-
-[tool.poetry.group.test.dependencies]
-jupyter = "^1.0.0"
-ipykernel = "^6.29.5"
-pytest = "^8.3.2"
-anyio = "^4.4.0"
-trio = "^0.26.0"
-python-dotenv = "1.0.0"
-pytest-asyncio = "^0.23.8"
-
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = ">=3.5.0,<3.6.0"
-ruff = "^0.5.5"
-
-[[tool.poetry.source]]
-name = "mirror"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-priority = "primary"
-
+[tool.uv]
+default-groups = ["test", "dev"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
