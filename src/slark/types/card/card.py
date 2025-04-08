@@ -174,3 +174,6 @@ class InteractiveCard(BaseModel):
     fallback: Union[Dict, None] = None
     """fallback 用于为卡片添加全局降级规则。触发降级时，卡片将全局展示“请升级客户端至最新版本后查看”占位图。
     注意：该字段要求飞书客户端的版本为 V7.7 及以上。"""
+
+
+InteractiveCard.model_rebuild()

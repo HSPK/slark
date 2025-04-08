@@ -4,7 +4,7 @@ import httpx
 from requests_toolbelt import MultipartEncoder
 from typing_extensions import Literal
 
-from slark.resources._resources import AsyncAPIResource, APIResource
+from slark.resources._resources import APIResource, AsyncAPIResource
 from slark.resources.api_path import API_PATH
 from slark.types.messages.image.response import UploadImageResponse
 
