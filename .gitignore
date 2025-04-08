@@ -2,6 +2,7 @@ dist/
 test.ipynb
 __pycache__/
 .env
-assets/
+tests/assets/
+/assets/
 poetry.lock
 uv.lock
