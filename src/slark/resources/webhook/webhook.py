@@ -82,7 +82,7 @@ class Webhook(APIResource):
             timeout=timeout,
         )
 
-    async def post_success_card(
+    def post_success_card(
         self,
         msg: str,
         title,
