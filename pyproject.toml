@@ -1,6 +1,6 @@
 [project]
 name = "slark"
-version = "0.1.26"
+version = "0.1.27"
 description = "# SLARK Simple LARK(Feishu) SDK"
 authors = [{ name = "HSPK", email = "whxway@whu.edu.cn" }]
 requires-python = "~=3.8"
@@ -15,6 +15,13 @@ dependencies = [
     "requests-toolbelt>=1.0.0,<2",
 ]
 
+[project.optional-dependencies]
+all = [
+    "fastapi>=0.114.1,<0.115",
+    "pycryptodome>=3.19.0,<4",
+    "uvicorn>=0.30.6,<0.31",
+]
+
 [dependency-groups]
 test = [
     "jupyter>=1.0.0,<2",
@@ -26,11 +33,6 @@ test = [
     "pytest-asyncio>=0.23.8,<0.24",
 ]
 dev = ["pre-commit>=3.5.0,<3.6.0", "ruff>=0.5.5,<0.6"]
-event = [
-    "fastapi>=0.114.1,<0.115",
-    "pycryptodome>=3.19.0,<4",
-    "uvicorn>=0.30.6,<0.31",
-]
 
 [tool.uv]
 default-groups = ["test", "dev"]
