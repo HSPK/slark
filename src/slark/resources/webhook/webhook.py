@@ -57,6 +57,8 @@ class Webhook(APIResource):
     def send_card(
         self, card: InteractiveCard, timeout: Union[httpx.Timeout, None] = None
     ) -> BaseResponse:
+        if not self._client._webhook_url:
+            raise ValueError("Webhook URL is not set. Please provide a valid webhook URL.")
         return self._post(
             self._client._webhook_url,
             body={
