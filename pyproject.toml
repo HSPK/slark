@@ -1,6 +1,6 @@
 [project]
 name = "slark"
-version = "0.1.27"
+version = "0.1.28"
 description = "# SLARK Simple LARK(Feishu) SDK"
 authors = [{ name = "HSPK", email = "whxway@whu.edu.cn" }]
 requires-python = "~=3.8"
